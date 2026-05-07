@@ -405,6 +405,9 @@ class Game{
     this.ctx=this.canvas.getContext('2d');
     this.levels=[];
     this.levelsLoaded=false;
+    this._loadingLevels=false;
+    this._loadFailed=false;
+    this._startPending=false;
     this.SCALE=1;
     this.state={
       lvlIdx:0,deaths:0,hi:+(localStorage.getItem('ft_hi')||0),
@@ -420,15 +423,18 @@ class Game{
   }
 
   async _loadLevels(){
-    for(const url of ['./mapa.json','../www/mapa.json']){
+    if(this._loadingLevels)return;
+    this._loadingLevels=true;
+    this._loadFailed=false;
+    for(const url of['./mapa.json','../www/mapa.json']){
       try{
         const r=await fetch(url);
-        if(r.ok){this.levels=await r.json();this.levelsLoaded=true;console.log('loaded',url);this._onLevelsLoaded();return;}
+        if(r.ok){this.levels=await r.json();this.levelsLoaded=true;console.log('loaded',url);this._loadingLevels=false;this._onLevelsLoaded();return;}
       }catch(e){}
       try{const x=new XMLHttpRequest();
         x.open('GET',url);x.overrideMimeType('application/json');
         await new Promise((a,b)=>{x.onload=()=>a();x.onerror=()=>b();x.send();});
-        if(x.status===200||x.status===0){this.levels=JSON.parse(x.responseText);this.levelsLoaded=true;console.log('loaded',url);this._onLevelsLoaded();return;}
+        if(x.status===200||x.status===0){this.levels=JSON.parse(x.responseText);this.levelsLoaded=true;console.log('loaded',url);this._loadingLevels=false;this._onLevelsLoaded();return;}
       }catch(e){}
     }
     // Last resort: sync XHR with timeout
@@ -436,9 +442,11 @@ class Game{
       try{const x=new XMLHttpRequest();
         x.open('GET',url,false);x.timeout=2000;x.overrideMimeType('application/json');
         x.send();
-        if(x.status===200||x.status===0){this.levels=JSON.parse(x.responseText);this.levelsLoaded=true;console.log('loaded(sync)',url);this._onLevelsLoaded();return;}
+        if(x.status===200||x.status===0){this.levels=JSON.parse(x.responseText);this.levelsLoaded=true;console.log('loaded(sync)',url);this._loadingLevels=false;this._onLevelsLoaded();return;}
       }catch(e){}
     }
+    this._loadingLevels=false;
+    this._loadFailed=true;
     console.warn('mapa.json NOT LOADED - game will not render');
   }
 
@@ -460,6 +468,12 @@ class Game{
   start(){
     if(this.state.started)return;
     if(!this.levelsLoaded){
+      if(this._loadFailed){
+        this._loadFailed=false;
+        this._startPending=true;
+        this._loadLevels();
+        return;
+      }
       this._startPending=true;
       const btn=document.getElementById('ov-start');
       if(btn)btn.textContent='LOADING...';
@@ -509,9 +523,10 @@ class Game{
     const h=document.getElementById('hv-lvl');if(h)h.textContent=String(idx+1).padStart(2,'0');
   }
 
-  resizeCanvas(){
+  resizeCanvas(retries){
+    if(retries===undefined)retries=0;
     const a=document.getElementById('arena'),aw=a.clientWidth,ah=a.clientHeight;
-    if(aw===0||ah===0){setTimeout(()=>this.resizeCanvas(),100);return;}
+    if((aw===0||ah===0)&&retries<10){setTimeout(()=>this.resizeCanvas(retries+1),100);return;}
     const lvl=this.levels[this.state.lvlIdx];
     if(!lvl){
       this.canvas.width=aw;this.canvas.height=ah;
@@ -527,6 +542,7 @@ class Game{
 
   tileAt(col,row){
     const lvl=this.state.lvl;
+    if(!lvl)return 1;
     if(col<0||row<0||col>=lvl.pw||row>=lvl.ph)return 1;
     return this.state.map[row*lvl.pw+col];
   }
@@ -603,6 +619,7 @@ class Game{
 
   respawn(){
     const lvl=this.state.lvl;const p=this.state.player;
+    if(!lvl||!p)return;
     if(this.state.checkX>=0&&this.state.checkY>=0){
       p.x=this.state.checkX;p.y=this.state.checkY;
     }else{
@@ -790,6 +807,14 @@ class Game{
       document.getElementById('btn-menu-'+id)?.addEventListener('click',()=>showPanel(id));
     }
     document.querySelectorAll('.panel-close').forEach(e=>e.addEventListener('click',hidePanel));
+    // Capacitor back button
+    try{if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App){
+      window.Capacitor.Plugins.App.addListener('backButton',()=>{
+        if(activePanel){hidePanel();}
+        else if(this.state.running&&!this.state.paused){this._togglePause();}
+        else if(this.state.paused){this._togglePause();}
+      });
+    }}catch(e){}
   }
   _btn(id,kn){
     const el=document.getElementById(id);if(!el)return;
