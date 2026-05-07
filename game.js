@@ -403,7 +403,23 @@ class Game{
   }
 
   async init(){
-    try{const r=await fetch('./mapa.json?v='+Date.now());if(!r.ok)throw Error('HTTP '+r.status);this.levels=await r.json();}catch(e){console.error('mapa.json error:',e);}
+    try{
+      const r=await fetch('./mapa.json?v='+Date.now());
+      if(!r.ok)throw Error('HTTP '+r.status);
+      this.levels=await r.json();
+    }catch(e){
+      console.warn('fetch mapa.json failed, trying XHR fallback:',e);
+      try{
+        const x=new XMLHttpRequest();
+        x.open('GET','./mapa.json',false);
+        x.overrideMimeType('application/json');
+        x.send();
+        if(x.status===200||x.status===0)this.levels=JSON.parse(x.responseText);
+        else throw Error('XHR status '+x.status);
+      }catch(e2){
+        console.error('mapa.json fallback also failed:',e2);
+      }
+    }
     this.resizeCanvas();
     requestAnimationFrame(ts=>this._loop(ts));
   }
@@ -716,7 +732,6 @@ class Game{
     document.getElementById('btn-pause')?.addEventListener('click',()=>this._togglePause());
     const so=()=>{initAudio();this.start();};
     document.getElementById('ov-start')?.addEventListener('click',so,{once:true});
-    document.getElementById('ov-start')?.addEventListener('touchstart',e=>{e.preventDefault();so();},{once:true,passive:false});
     window.addEventListener('resize',()=>{if(this.state.running)this.resizeCanvas();});
     // Menu
     for(const id of['profile','shop','challenges','leaderboard','stats','achievements']){
@@ -731,8 +746,11 @@ class Game{
     const dn=e=>{e.preventDefault();e.stopPropagation();this.keys[kn]=true;el.classList.add('pressed');};
     const up=e=>{e.preventDefault();e.stopPropagation();this.keys[kn]=false;el.classList.remove('pressed');};
     el.addEventListener('touchstart',dn,{passive:false});el.addEventListener('touchend',up,{passive:false});
-    el.addEventListener('touchcancel',up,{passive:false});el.addEventListener('mousedown',dn);
-    el.addEventListener('mouseup',up);el.addEventListener('mouseleave',up);
+    el.addEventListener('touchcancel',up,{passive:false});
+    if(!('ontouchstart' in window)){
+      el.addEventListener('mousedown',dn);el.addEventListener('mouseup',up);
+      el.addEventListener('mouseleave',up);
+    }
   }
 }
 
