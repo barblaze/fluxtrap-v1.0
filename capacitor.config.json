@@ -13,7 +13,8 @@
       "keystoreAlias": null,
       "keystoreAliasPassword": null
     },
-    "webContentsDebuggingEnabled": true
+    "webContentsDebuggingEnabled": true,
+    "captureInput": true
   },
   "plugins": {
     "SplashScreen": {

@@ -81,6 +81,22 @@ function writeSave(){
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(window._save)); }catch(e){}
 }
 
+/* ========== ERROR CATCHER ========== */
+(function(){
+  const el = document.createElement('div');
+  el.id='err-catcher';el.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#c00;color:#fff;font:14px monospace;padding:8px;z-index:9999;display:none;white-space:pre-wrap;word-break:break-all';
+  document.body.appendChild(el);
+  window.onerror = function(msg, src, line, col, err){
+    el.style.display='block';
+    el.textContent = 'JS ERROR: ' + msg + '\n' + (src||'') + ':' + (line||'') + ':' + (col||'');
+    return true;
+  };
+  window.addEventListener('unhandledrejection', function(e){
+    el.style.display='block';
+    el.textContent = 'PROMISE ERROR: ' + e.reason;
+  });
+})();
+
 /* ========== AUDIO ========== */
 let actx = null;
 function initAudio(){
@@ -382,31 +398,13 @@ function renderAchievements(){
   h+='</div>';el.innerHTML=h;
 }
 
-/* ========== LEVEL LOADER ========== */
-function loadLevelsSync(){
-  try{
-    const x=new XMLHttpRequest();
-    x.open('GET','./mapa.json',false);
-    x.overrideMimeType('application/json');
-    x.send();
-    if(x.status===200||x.status===0)return JSON.parse(x.responseText);
-  }catch(e){console.warn('sync load failed:',e);}
-  try{
-    const x=new XMLHttpRequest();
-    x.open('GET','../www/mapa.json',false);
-    x.overrideMimeType('application/json');
-    x.send();
-    if(x.status===200||x.status===0)return JSON.parse(x.responseText);
-  }catch(e){console.warn('sync load fallback failed:',e);}
-  return [];
-}
-
 /* ========== GAME ========== */
 class Game{
   constructor(){
     this.canvas=document.getElementById('c');
     this.ctx=this.canvas.getContext('2d');
-    this.levels=loadLevelsSync();
+    this.levels=[];
+    this.levelsLoaded=false;
     this.SCALE=1;
     this.state={
       lvlIdx:0,deaths:0,hi:+(localStorage.getItem('ft_hi')||0),
@@ -421,8 +419,25 @@ class Game{
     this._bindAll();
   }
 
+  async _loadLevels(){
+    for(const url of ['./mapa.json','../www/mapa.json']){
+      try{
+        const r=await fetch(url);
+        if(r.ok){this.levels=await r.json();this.levelsLoaded=true;console.log('loaded',url);return;}
+      }catch(e){}
+      try{const x=new XMLHttpRequest();
+        x.open('GET',url);x.overrideMimeType('application/json');
+        await new Promise((a,b)=>{x.onload=()=>a();x.onerror=()=>b();x.send();});
+        if(x.status===200||x.status===0){this.levels=JSON.parse(x.responseText);this.levelsLoaded=true;console.log('loaded',url);return;}
+      }catch(e){}
+    }
+    console.warn('mapa.json NOT LOADED - game will not render');
+  }
+
   init(){
-    if(this.levels.length===0)console.warn('mapa.json NOT LOADED - game will not render');
+    const dot=document.getElementById('js-dot');
+    if(dot)dot.style.background='#0f0';
+    this._loadLevels();
     this.resizeCanvas();
     requestAnimationFrame(ts=>this._loop(ts));
   }
