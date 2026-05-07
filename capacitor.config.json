@@ -2,9 +2,8 @@
   "appId": "com.barblaze.fluxtrap",
   "appName": "FLUXTRAP",
   "webDir": "www",
-  "bundledWebRuntime": false,
   "server": {
-    "androidScheme": "https",
+    "androidScheme": "http",
     "cleartext": true
   },
   "android": {
@@ -13,7 +12,8 @@
       "keystorePassword": null,
       "keystoreAlias": null,
       "keystoreAliasPassword": null
-    }
+    },
+    "webContentsDebuggingEnabled": true
   },
   "plugins": {
     "SplashScreen": {

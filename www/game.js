@@ -382,12 +382,31 @@ function renderAchievements(){
   h+='</div>';el.innerHTML=h;
 }
 
+/* ========== LEVEL LOADER ========== */
+function loadLevelsSync(){
+  try{
+    const x=new XMLHttpRequest();
+    x.open('GET','./mapa.json',false);
+    x.overrideMimeType('application/json');
+    x.send();
+    if(x.status===200||x.status===0)return JSON.parse(x.responseText);
+  }catch(e){console.warn('sync load failed:',e);}
+  try{
+    const x=new XMLHttpRequest();
+    x.open('GET','../www/mapa.json',false);
+    x.overrideMimeType('application/json');
+    x.send();
+    if(x.status===200||x.status===0)return JSON.parse(x.responseText);
+  }catch(e){console.warn('sync load fallback failed:',e);}
+  return [];
+}
+
 /* ========== GAME ========== */
 class Game{
   constructor(){
     this.canvas=document.getElementById('c');
     this.ctx=this.canvas.getContext('2d');
-    this.levels=[];
+    this.levels=loadLevelsSync();
     this.SCALE=1;
     this.state={
       lvlIdx:0,deaths:0,hi:+(localStorage.getItem('ft_hi')||0),
@@ -402,24 +421,8 @@ class Game{
     this._bindAll();
   }
 
-  async init(){
-    try{
-      const r=await fetch('./mapa.json?v='+Date.now());
-      if(!r.ok)throw Error('HTTP '+r.status);
-      this.levels=await r.json();
-    }catch(e){
-      console.warn('fetch mapa.json failed, trying XHR fallback:',e);
-      try{
-        const x=new XMLHttpRequest();
-        x.open('GET','./mapa.json',false);
-        x.overrideMimeType('application/json');
-        x.send();
-        if(x.status===200||x.status===0)this.levels=JSON.parse(x.responseText);
-        else throw Error('XHR status '+x.status);
-      }catch(e2){
-        console.error('mapa.json fallback also failed:',e2);
-      }
-    }
+  init(){
+    if(this.levels.length===0)console.warn('mapa.json NOT LOADED - game will not render');
     this.resizeCanvas();
     requestAnimationFrame(ts=>this._loop(ts));
   }
@@ -471,7 +474,12 @@ class Game{
   resizeCanvas(){
     const a=document.getElementById('arena'),aw=a.clientWidth,ah=a.clientHeight;
     if(aw===0||ah===0){setTimeout(()=>this.resizeCanvas(),100);return;}
-    const lvl=this.levels[this.state.lvlIdx];if(!lvl)return;
+    const lvl=this.levels[this.state.lvlIdx];
+    if(!lvl){
+      this.canvas.width=aw;this.canvas.height=ah;
+      this.SCALE=1;
+      return;
+    }
     const gw=lvl.pw*CS,gh=lvl.ph*CS;
     this.SCALE=Math.min(aw/gw,ah/gh,2);
     this.canvas.width=gw;this.canvas.height=gh;
@@ -649,8 +657,14 @@ class Game{
   }
 
   render(){
-    this._drawBG();this._drawGrav();
     const lvl=this.state.lvl;
+    if(!lvl){
+      this.ctx.fillStyle='#04060f';this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
+      this.ctx.fillStyle='#335';this.ctx.font='14px monospace';this.ctx.textAlign='center';
+      this.ctx.fillText('LOADING...',this.canvas.width/2,this.canvas.height/2);
+      return;
+    }
+    this._drawBG();this._drawGrav();
     for(let r=0;r<lvl.ph;r++)for(let c=0;c<lvl.pw;c++){const t=this.tileAt(c,r);if(t!==0)this._drawT(c,r,t);}
     this._drawFB();
     for(const e of this.state.entities)e.draw(this.ctx,this);
