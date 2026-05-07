@@ -423,15 +423,30 @@ class Game{
     for(const url of ['./mapa.json','../www/mapa.json']){
       try{
         const r=await fetch(url);
-        if(r.ok){this.levels=await r.json();this.levelsLoaded=true;console.log('loaded',url);return;}
+        if(r.ok){this.levels=await r.json();this.levelsLoaded=true;console.log('loaded',url);this._onLevelsLoaded();return;}
       }catch(e){}
       try{const x=new XMLHttpRequest();
         x.open('GET',url);x.overrideMimeType('application/json');
         await new Promise((a,b)=>{x.onload=()=>a();x.onerror=()=>b();x.send();});
-        if(x.status===200||x.status===0){this.levels=JSON.parse(x.responseText);this.levelsLoaded=true;console.log('loaded',url);return;}
+        if(x.status===200||x.status===0){this.levels=JSON.parse(x.responseText);this.levelsLoaded=true;console.log('loaded',url);this._onLevelsLoaded();return;}
+      }catch(e){}
+    }
+    // Last resort: sync XHR with timeout
+    for(const url of['./mapa.json','../www/mapa.json']){
+      try{const x=new XMLHttpRequest();
+        x.open('GET',url,false);x.timeout=2000;x.overrideMimeType('application/json');
+        x.send();
+        if(x.status===200||x.status===0){this.levels=JSON.parse(x.responseText);this.levelsLoaded=true;console.log('loaded(sync)',url);this._onLevelsLoaded();return;}
       }catch(e){}
     }
     console.warn('mapa.json NOT LOADED - game will not render');
+  }
+
+  _onLevelsLoaded(){
+    if(this._startPending&&this.levelsLoaded){
+      this._startPending=false;
+      this.start();
+    }
   }
 
   init(){
@@ -443,6 +458,14 @@ class Game{
   }
 
   start(){
+    if(this.state.started)return;
+    if(!this.levelsLoaded){
+      this._startPending=true;
+      const btn=document.getElementById('ov-start');
+      if(btn)btn.textContent='LOADING...';
+      this._loadLevels();
+      return;
+    }
     initAudio();this._checkDaily();this._hideOverlay();
     const lastIdx=this.levels.length-1;
     const hasTutorial=this.levels[lastIdx]?.id==='tutorial';
