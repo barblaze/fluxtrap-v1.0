@@ -651,7 +651,6 @@ class Game{
     if(s.deaths<=3&&s.lvl?.id!=='tutorial'){const dc=getDailyChallenge();if(!dc.done){sv.dailyDone=true;sv.lastDaily=`${dailySeed()}`;sv.streak++;addXP(dc.xp);sv.coins+=dc.coins;if(sv.streak>=3)checkAchievement('streak3');if(sv.streak>=7)checkAchievement('streak7');writeSave();sfx('coin');this._showMsg('DAILY COMPLETE!');}}
     if(s.lvlIdx===4&&s.deaths<=5&&s.lvl?.id!=='tutorial'){const wc=getWeeklyChallenge();if(!wc.done){sv.weeklyDone[weeklySeed()]=true;addXP(wc.xp);sv.coins+=wc.coins;sv.gems+=wc.gems;writeSave();sfx('coin');this._showMsg('WEEKLY COMPLETE!');}}
 
-    const nonTutCount=this.levels.filter(l=>l.id!=='tutorial').length;
     const isLastNormal=s.lvlIdx>=nonTutCount-1;
     if(s.lvl?.id==='tutorial'){
       // Tutorial complete - go to main game
@@ -670,7 +669,7 @@ class Game{
     const s=this.state;if(!s.running||s.paused)return;
     if(this._lastTS===0)this._lastTS=ts;
     const dt=Math.min((ts-this._lastTS)*0.001,MAX_DT);this._lastTS=ts;
-    this._step(TARGET_DT);this.render();
+    this._step(dt);this.render();
   }
 
   _step(dt){
@@ -689,10 +688,12 @@ class Game{
     const spd=p.speedBoost>0?MOVE_SPD*1.5:MOVE_SPD;
     if(this.keys.left)p.vx=-spd;else if(this.keys.right)p.vx=spd;else p.vx=0;
     if(this.keys.jump&&(p.onGround||s.gravFlip)){
+      p.jumpsLeft=p.hasDoubleJump?1:0;
       p.vy=JUMP_VEL*(s.gravFlip?-1:1);p.onGround=false;p.stretch=1.3;sfx('jump');
-      window._save.totalJumps++;writeSave();this.keys.jump=false;p.jumpsLeft=p.hasDoubleJump?2:1;
+      window._save.totalJumps++;writeSave();this.keys.jump=false;
     }else if(this.keys.jump&&p.hasDoubleJump&&p.jumpsLeft>0&&!p.onGround){
       p.vy=JUMP_VEL*(s.gravFlip?-1:1);p.jumpsLeft--;sfx('jump');this.keys.jump=false;p.stretch=1.3;
+      window._save.totalJumps++;writeSave();
     }
     p.trailPts.push({x:p.x,y:p.y});if(p.trailPts.length>6)p.trailPts.shift();
     p.onGround=false;
