@@ -563,30 +563,26 @@ class Game{
     writeSave();
     if(s.deaths===0)checkAchievement('unkillable');
     if(sv.totalJumps>=1000)checkAchievement('jumper');
-    if(sv.totalDeaths<=100){const nonTut=this.levels.filter(l=>l.id!=='tutorial').length;if(s.lvlIdx>=nonTut-1)checkAchievement('speedrun');}
     const nonTutCount=this.levels.filter(l=>l.id!=='tutorial').length;
-    if(s.lvlIdx>=nonTutCount-1)checkAchievement('zoneClear');
+    if(s.lvl?.id!=='tutorial'&&s.lvlIdx>=nonTutCount-1)checkAchievement('zoneClear');
+    if(s.lvl?.id!=='tutorial'&&sv.totalDeaths<=100&&s.lvlIdx>=nonTutCount-1)checkAchievement('speedrun');
     const all3=this.levels.filter(l=>l.id!=='tutorial').every((_,i)=>sv.stars[i]===3);
     if(all3)checkAchievement('completionist');
     // Daily check
     if(s.deaths<=3&&s.lvl?.id!=='tutorial'){const dc=getDailyChallenge();if(!dc.done){sv.dailyDone=true;sv.lastDaily=`${dailySeed()}`;sv.streak++;addXP(dc.xp);sv.coins+=dc.coins;if(sv.streak>=3)checkAchievement('streak3');if(sv.streak>=7)checkAchievement('streak7');writeSave();sfx('coin');this._showMsg('DAILY COMPLETE!');}}
     if(s.lvlIdx===4&&s.deaths<=5&&s.lvl?.id!=='tutorial'){const wc=getWeeklyChallenge();if(!wc.done){sv.weeklyDone[weeklySeed()]=true;addXP(wc.xp);sv.coins+=wc.coins;sv.gems+=wc.gems;writeSave();sfx('coin');this._showMsg('WEEKLY COMPLETE!');}}
 
-    if(s.lvlIdx<this.levels.length-1){
-      const next=this.levels[s.lvlIdx+1];
-      if(next&&next.id==='tutorial'){
-        this._showOverlay('ZONE CLEARED','TUTORIAL COMPLETE','','PLAY GAME',()=>{this.loadLevel(0);this._hideOverlay();});
-        return;
-      }
-      this._showOverlay('ZONE CLEARED',`ZONE ${s.lvlIdx+1} COMPLETE`,`Deaths: ${s.deaths} Stars: ${stars}`,'NEXT ZONE',()=>{this.loadLevel(s.lvlIdx+1);this._hideOverlay();});
-    }else{
+    const nonTutCount=this.levels.filter(l=>l.id!=='tutorial').length;
+    const isLastNormal=s.lvlIdx>=nonTutCount-1;
+    if(s.lvl?.id==='tutorial'){
+      // Tutorial complete - go to main game
+      this._showOverlay('TUTORIAL COMPLETE','','','PLAY GAME',()=>{this.loadLevel(0);this._hideOverlay();});
+    }else if(isLastNormal){
+      // Game complete
       localStorage.setItem('ft_hi',sv.totalDeaths);
-      const skip= this.levels[this.levels.length-1]?.id==='tutorial'?1:0;
-      if(skip&&s.lvlIdx===this.levels.length-1){
-        this._showOverlay('YOU SURVIVED','TUTORIAL COMPLETE','','PLAY GAME',()=>{sv.deaths=0;const h=document.getElementById('hv-deaths');if(h)h.textContent='0';this.loadLevel(0);this._hideOverlay();});
-      }else{
-        this._showOverlay('YOU SURVIVED',`Total deaths: ${sv.totalDeaths}`,'ALL ZONES CLEARED','PLAY AGAIN',()=>{sv.deaths=0;const h=document.getElementById('hv-deaths');if(h)h.textContent='0';this.loadLevel(0);this._hideOverlay();});
-      }
+      this._showOverlay('YOU SURVIVED',`Total deaths: ${sv.totalDeaths}`,'ALL ZONES CLEARED','PLAY AGAIN',()=>{sv.deaths=0;const h=document.getElementById('hv-deaths');if(h)h.textContent='0';this.loadLevel(0);this._hideOverlay();});
+    }else{
+      this._showOverlay('ZONE CLEARED',`ZONE ${s.lvlIdx+1} COMPLETE`,`Deaths: ${s.deaths} Stars: ${stars}`,'NEXT ZONE',()=>{this.loadLevel(s.lvlIdx+1);this._hideOverlay();});
     }
   }
 
