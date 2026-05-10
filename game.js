@@ -902,12 +902,16 @@ class Game{
 }
 
 /* ========== INIT ========== */
-window._save = loadSave();
-window._game = new Game();
-window.game = window._game;
+function initGame(){
+  window._save = loadSave();
+  window._game = new Game();
+  window.game = window._game;
+  window._game.init();
+  console.log('Game initialized');
+}
 
 if(document.readyState === 'loading'){
-  document.addEventListener('DOMContentLoaded', () => window._game.init());
+  document.addEventListener('DOMContentLoaded', initGame);
 }else{
-  window._game.init();
+  initGame();
 }
