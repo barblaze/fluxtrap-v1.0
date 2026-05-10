@@ -919,8 +919,15 @@ class Game{
 
 /* ========== INIT ========== */
 function updateDebug(msg){
-  const d = document.getElementById('debug-status');
-  if(d){ d.textContent = msg; d.style.color = msg.includes('ERROR') ? '#f00' : '#0f0'; }
+  let d = document.getElementById('debug-status');
+  if(!d){
+    d = document.createElement('div');
+    d.id = 'debug-status';
+    d.style.cssText = 'position:fixed;top:20px;left:4px;background:#000;color:#0f0;padding:4px 8px;font-size:10px;font-family:monospace;z-index:9999;max-width:200px;word-break:break-all;';
+    document.body.appendChild(d);
+  }
+  d.textContent = msg;
+  d.style.color = msg.includes('ERROR') ? '#f00' : '#0f0';
   console.log('DEBUG:', msg);
 }
 
@@ -957,5 +964,8 @@ function startGameClick(){
   d.textContent = 'CLICK: Game started!';
 }
 
-// Ejecutar inmediatamente (sin esperar DOMContentLoaded)
-initGame();
+// Ejecutar con pequeño delay para asegurar DOM listo
+setTimeout(function(){
+  updateDebug('SCRIPT: Running initGame...');
+  initGame();
+}, 100);
