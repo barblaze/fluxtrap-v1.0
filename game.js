@@ -1,22 +1,5 @@
 'use strict';
 
-// Debug simple - ejecutar inmediatamente
-var _dbgDiv;
-(function(){
-  _dbgDiv = document.createElement('div');
-  _dbgDiv.style.cssText = 'position:fixed;top:20px;left:4px;background:#000;color:#0f0;padding:4px 8px;font-size:10px;font-family:monospace;z-index:9999;white-space:pre-wrap;max-width:180px;';
-  _dbgDiv.textContent = 'JS: Loading...';
-  document.body.appendChild(_dbgDiv);
-})();
-
-function dbg(msg){
-  if(_dbgDiv){ _dbgDiv.textContent = msg; }
-  console.log('DBG:', msg);
-}
-
-dbg('STEP 1: Script loaded');
-window._gameReady = false;
-
 const PLAYER_W = 16, PLAYER_H = 18, CS = 20;
 const DEBUG_SENSORS = false;
 
@@ -418,11 +401,8 @@ function renderAchievements(){
 /* ========== GAME ========== */
 class Game{
   constructor(){
-    updateDebug('Game constructor: Getting canvas...');
     this.canvas=document.getElementById('c');
-    if(!this.canvas){ updateDebug('ERROR: canvas not found in constructor!'); }
-    this.ctx=this.canvas ? this.canvas.getContext('2d') : null;
-    if(!this.ctx){ updateDebug('WARN: ctx is null in constructor'); }
+    this.ctx=this.canvas.getContext('2d');
     this.levels=[];
     this.levelsLoaded=false;
     this._loadingLevels=false;
@@ -439,94 +419,7 @@ class Game{
     };
     this.keys={left:false,right:false,jump:false};
     this._lastTS=0;this._msgTimer=null;
-  }
-
-  init(){
-    updateDebug('init(): Starting...');
-    if(!this.ctx){
-      updateDebug('init(): Getting canvas...');
-      this.canvas = document.getElementById('c');
-      this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
-    }
-    if(!this.ctx){
-      updateDebug('ERROR: Canvas not found in init()!');
-      return;
-    }
-    updateDebug('init(): Canvas OK, binding events...');
-    const dot=document.getElementById('js-dot');
-    if(dot)dot.style.background='#0f0';
     this._bindAll();
-    updateDebug('init(): Events bound, loading levels...');
-    this._loadLevels();
-    updateDebug('init(): Levels loading, resizing...');
-    this.resizeCanvas();
-    requestAnimationFrame(ts=>this._loop(ts));
-    updateDebug('init(): DONE');
-  }
-
-  _bindAll(){
-    document.addEventListener('keydown',e=>{
-      if(e.key==='p'||e.key==='P'||e.key==='Escape'){this._togglePause();return;}
-      if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')this.keys.left=true;
-      if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')this.keys.right=true;
-      if(e.key===' '||e.key==='ArrowUp'||e.key==='w'||e.key==='W')this.keys.jump=true;
-      e.preventDefault();
-    },{passive:false});
-    document.addEventListener('keyup',e=>{
-      if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')this.keys.left=false;
-      if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')this.keys.right=false;
-      if(e.key===' '||e.key==='ArrowUp'||e.key==='w'||e.key==='W')this.keys.jump=false;
-    });
-    for(const[id,k]of[['btn-l','left'],['btn-r','right'],['btn-jump','jump']])this._btn(id,k);
-    document.getElementById('btn-pause')?.addEventListener('click',()=>this._togglePause());
-    
-    const so=()=>{
-      console.log('START BUTTON CLICKED');
-      try{
-        initAudio();
-        this.start();
-        console.log('start() completed');
-      }catch(e){
-        console.error('Start error:',e);
-        document.getElementById('h-msg').textContent='ERROR: '+e.message;
-        document.getElementById('h-msg').classList.add('show');
-      }
-    };
-    const ovStartBtn=document.getElementById('ov-start');
-    if(ovStartBtn){
-      ovStartBtn.onclick = so;
-      console.log('ov-start button OK');
-    }else{
-      console.error('ov-start NOT FOUND');
-      document.getElementById('h-msg').textContent='ERROR: btn not found';
-      document.getElementById('h-msg').classList.add('show');
-    }
-    window.addEventListener('resize',()=>{if(this.state.running)this.resizeCanvas();});
-    for(const id of['profile','shop','challenges','leaderboard','stats','achievements']){
-      document.getElementById('btn-menu-'+id)?.addEventListener('click',()=>showPanel(id));
-    }
-    document.querySelectorAll('.panel-close').forEach(e=>e.addEventListener('click',hidePanel));
-    try{if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App){
-      window.Capacitor.Plugins.App.addListener('backButton',()=>{
-        if(activePanel){hidePanel();}
-        else if(this.state.running&&!this.state.paused){this._togglePause();}
-        else if(this.state.paused){this._togglePause();}
-      });
-    }}catch(e){}
-  }
-
-  _btn(id,kn){
-    const el=document.getElementById(id);if(!el)return;
-    el.oncontextmenu=e=>e.preventDefault();
-    el.ontouchcancel=e=>{this.keys[kn]=false;el.classList.remove('pressed');};
-    const dn=e=>{e.preventDefault();e.stopPropagation();this.keys[kn]=true;el.classList.add('pressed');};
-    const up=e=>{e.preventDefault();e.stopPropagation();this.keys[kn]=false;el.classList.remove('pressed');};
-    el.addEventListener('touchstart',dn,{passive:false});el.addEventListener('touchend',up,{passive:false});
-    el.addEventListener('touchcancel',up,{passive:false});
-    if(!('ontouchstart' in window)){
-      el.addEventListener('mousedown',dn);el.addEventListener('mouseup',up);
-      el.addEventListener('mouseleave',up);
-    }
   }
 
   async _loadLevels(){
@@ -562,6 +455,14 @@ class Game{
       this._startPending=false;
       this.start();
     }
+  }
+
+  init(){
+    const dot=document.getElementById('js-dot');
+    if(dot)dot.style.background='#0f0';
+    this._loadLevels();
+    this.resizeCanvas();
+    requestAnimationFrame(ts=>this._loop(ts));
   }
 
   start(){
@@ -931,39 +832,9 @@ class Game{
 }
 
 /* ========== INIT ========== */
-function dbg(msg){
-  if(window._debugSimple){
-    window._debugSimple.textContent = msg;
-  }
-  console.log('DBG:', msg);
-}
-
-function initGame(){
-  dbg('INIT: Starting...');
-  try{
-    dbg('INIT: Load save...');
-    window._save = loadSave();
-    dbg('INIT: Create Game...');
-    window._game = new Game();
-    window.game = window._game;
-    dbg('INIT: game.init()...');
-    window._game.init();
-    window._gameReady = true;
-    dbg('INIT: DONE!');
-  }catch(e){
-    dbg('ERROR: ' + e.message);
-  }
-}
-
-function startGameClick(){
-  if(!window._game){
-    dbg('CLICK ERROR: window._game is NULL!');
-    alert('Game not loaded!');
-    return;
-  }
-  dbg('CLICK: Starting...');
-  window._game.start();
-}
-
-// Delay para asegurar DOM listo
-setTimeout(initGame, 100);
+setTimeout(function(){
+  window._save = loadSave();
+  window._game = new Game();
+  window.game = window._game;
+  window._game.init();
+}, 100);
