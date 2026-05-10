@@ -450,10 +450,28 @@ class Game{
     });
     for(const[id,k]of[['btn-l','left'],['btn-r','right'],['btn-jump','jump']])this._btn(id,k);
     document.getElementById('btn-pause')?.addEventListener('click',()=>this._togglePause());
-    const so=()=>{try{initAudio();this.start();}catch(e){console.error('Start error:',e);alert('Error:'+e)}};
+    
+    const so=()=>{
+      console.log('START BUTTON CLICKED');
+      try{
+        initAudio();
+        this.start();
+        console.log('start() completed');
+      }catch(e){
+        console.error('Start error:',e);
+        document.getElementById('h-msg').textContent='ERROR: '+e.message;
+        document.getElementById('h-msg').classList.add('show');
+      }
+    };
     const ovStartBtn=document.getElementById('ov-start');
-    if(ovStartBtn){ovStartBtn.addEventListener('click',so);console.log('ov-start attached');}
-    else{console.error('ov-start NOT FOUND');}
+    if(ovStartBtn){
+      ovStartBtn.onclick = so;
+      console.log('ov-start button OK');
+    }else{
+      console.error('ov-start NOT FOUND');
+      document.getElementById('h-msg').textContent='ERROR: btn not found';
+      document.getElementById('h-msg').classList.add('show');
+    }
     window.addEventListener('resize',()=>{if(this.state.running)this.resizeCanvas();});
     for(const id of['profile','shop','challenges','leaderboard','stats','achievements']){
       document.getElementById('btn-menu-'+id)?.addEventListener('click',()=>showPanel(id));
