@@ -1,6 +1,15 @@
 'use strict';
 
-// Debug inicial
+// Debug simple - ejecutar inmediatamente
+(function(){
+  var d = document.createElement('div');
+  d.id = 'debug-simple';
+  d.style.cssText = 'position:fixed;top:20px;left:4px;background:#000;color:#0f0;padding:4px 8px;font-size:10px;font-family:monospace;z-index:9999;';
+  d.textContent = 'JS: Loading...';
+  document.body.appendChild(d);
+  window._debugSimple = d;
+})();
+
 console.log('FLUXTRAP: Script starting...');
 window._gameReady = false;
 
@@ -918,54 +927,39 @@ class Game{
 }
 
 /* ========== INIT ========== */
-function updateDebug(msg){
-  let d = document.getElementById('debug-status');
-  if(!d){
-    d = document.createElement('div');
-    d.id = 'debug-status';
-    d.style.cssText = 'position:fixed;top:20px;left:4px;background:#000;color:#0f0;padding:4px 8px;font-size:10px;font-family:monospace;z-index:9999;max-width:200px;word-break:break-all;';
-    document.body.appendChild(d);
+function dbg(msg){
+  if(window._debugSimple){
+    window._debugSimple.textContent = msg;
   }
-  d.textContent = msg;
-  d.style.color = msg.includes('ERROR') ? '#f00' : '#0f0';
-  console.log('DEBUG:', msg);
+  console.log('DBG:', msg);
 }
 
 function initGame(){
-  updateDebug('INIT: Starting...');
+  dbg('INIT: Starting...');
   try{
-    updateDebug('INIT: Loading save...');
+    dbg('INIT: Load save...');
     window._save = loadSave();
-    updateDebug('INIT: Creating Game...');
+    dbg('INIT: Create Game...');
     window._game = new Game();
     window.game = window._game;
-    updateDebug('INIT: Calling game.init()...');
+    dbg('INIT: game.init()...');
     window._game.init();
     window._gameReady = true;
-    updateDebug('INIT: DONE! Game ready.');
-    const dot = document.getElementById('js-dot');
-    if(dot) dot.style.background = '#00ff00';
+    dbg('INIT: DONE!');
   }catch(e){
-    updateDebug('ERROR: ' + e.message);
-    console.error('FLUXTRAP: Init error:', e);
+    dbg('ERROR: ' + e.message);
   }
 }
 
 function startGameClick(){
-  const d = document.getElementById('debug-status');
   if(!window._game){
-    d.textContent = 'CLICK ERROR: window._game is NULL!';
-    d.style.color = '#f00';
-    alert('Game not loaded! window._game = ' + window._game);
+    dbg('CLICK ERROR: window._game is NULL!');
+    alert('Game not loaded!');
     return;
   }
-  d.textContent = 'CLICK: Starting game...';
+  dbg('CLICK: Starting...');
   window._game.start();
-  d.textContent = 'CLICK: Game started!';
 }
 
-// Ejecutar con pequeño delay para asegurar DOM listo
-setTimeout(function(){
-  updateDebug('SCRIPT: Running initGame...');
-  initGame();
-}, 100);
+// Delay para asegurar DOM listo
+setTimeout(initGame, 100);
