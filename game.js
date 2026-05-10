@@ -1,5 +1,11 @@
 'use strict';
 
+function dbg(m){
+  var e=document.getElementById('debug-status');
+  if(e)e.textContent=m;
+  console.log(m);
+}
+
 const PLAYER_W = 16, PLAYER_H = 18, CS = 20;
 const DEBUG_SENSORS = false;
 
@@ -799,8 +805,7 @@ class Game{
     // Buttons
     for(const[id,k]of[['btn-l','left'],['btn-r','right'],['btn-jump','jump']])this._btn(id,k);
     document.getElementById('btn-pause')?.addEventListener('click',()=>this._togglePause());
-    const so=()=>{initAudio();this.start();};
-    document.getElementById('ov-start')?.addEventListener('click',so,{once:true});
+    document.getElementById('ov-start')?.addEventListener('click',()=>{initAudio();this.start();});
     window.addEventListener('resize',()=>{if(this.state.running)this.resizeCanvas();});
     // Menu
     for(const id of['profile','shop','challenges','leaderboard','stats','achievements']){
@@ -831,10 +836,34 @@ class Game{
   }
 }
 
+/* ========== GLOBAL START ========== */
+function startGameClick(){
+  dbg('startGameClick');
+  if(window._game){
+    initAudio();
+    window._game.start();
+  } else {
+    dbg('game not ready, retry');
+    setTimeout(startGameClick, 50);
+  }
+}
+
 /* ========== INIT ========== */
-setTimeout(function(){
-  window._save = loadSave();
-  window._game = new Game();
-  window.game = window._game;
-  window._game.init();
-}, 100);
+function bootGame(){
+  try{
+    dbg('boot');
+    window._save = loadSave();
+    window._game = new Game();
+    window.game = window._game;
+    window._game.init();
+    dbg('running');
+  }catch(e){
+    dbg('ERR:'+e.message);
+    console.error(e);
+  }
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(bootGame,50);});
+}else{
+  setTimeout(bootGame,50);
+}

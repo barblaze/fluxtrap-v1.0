@@ -4,3 +4,5 @@ node_modules/
 
 # Capacitor artifacts downloaded during sync
 capacitor-android-*.tgz
+.cache/
+.local/
