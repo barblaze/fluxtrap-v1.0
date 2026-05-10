@@ -1,5 +1,9 @@
 'use strict';
 
+// Debug inicial
+console.log('FLUXTRAP: Script starting...');
+window._gameReady = false;
+
 const PLAYER_W = 16, PLAYER_H = 18, CS = 20;
 const DEBUG_SENSORS = false;
 
@@ -903,13 +907,38 @@ class Game{
 
 /* ========== INIT ========== */
 function initGame(){
-  window._save = loadSave();
-  window._game = new Game();
-  window.game = window._game;
-  window._game.init();
-  console.log('Game initialized');
+  console.log('FLUXTRAP: Initializing...');
+  try{
+    window._save = loadSave();
+    window._game = new Game();
+    window.game = window._game;
+    window._game.init();
+    window._gameReady = true;
+    console.log('FLUXTRAP: Game initialized successfully!');
+    // Mostrar indicador visual de éxito
+    const dot = document.getElementById('js-dot');
+    if(dot) dot.style.background = '#00ff00';
+  }catch(e){
+    console.error('FLUXTRAP: Init error:', e);
+    // Mostrar error en pantalla
+    const errDiv = document.createElement('div');
+    errDiv.id = 'init-error';
+    errDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#c00;color:#fff;padding:20px;border-radius:8px;z-index:99999;font-family:monospace;';
+    errDiv.textContent = 'ERROR: ' + e.message;
+    document.body.appendChild(errDiv);
+  }
 }
 
+function startGameClick(){
+  console.log('FLUXTRAP: Start button clicked, window._game:', !!window._game);
+  if(!window._game){
+    alert('Game not loaded yet! Please wait or refresh.');
+    return;
+  }
+  window._game.start();
+}
+
+// Ejecutar cuando el DOM esté listo
 if(document.readyState === 'loading'){
   document.addEventListener('DOMContentLoaded', initGame);
 }else{
