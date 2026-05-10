@@ -450,8 +450,10 @@ class Game{
     });
     for(const[id,k]of[['btn-l','left'],['btn-r','right'],['btn-jump','jump']])this._btn(id,k);
     document.getElementById('btn-pause')?.addEventListener('click',()=>this._togglePause());
-    const so=()=>{initAudio();this.start();};
-    document.getElementById('ov-start')?.addEventListener('click',so,{once:true});
+    const so=()=>{try{initAudio();this.start();}catch(e){console.error('Start error:',e);alert('Error:'+e)}};
+    const ovStartBtn=document.getElementById('ov-start');
+    if(ovStartBtn){ovStartBtn.addEventListener('click',so);console.log('ov-start attached');}
+    else{console.error('ov-start NOT FOUND');}
     window.addEventListener('resize',()=>{if(this.state.running)this.resizeCanvas();});
     for(const id of['profile','shop','challenges','leaderboard','stats','achievements']){
       document.getElementById('btn-menu-'+id)?.addEventListener('click',()=>showPanel(id));
