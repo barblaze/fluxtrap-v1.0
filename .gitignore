@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+*.log
+
+# Capacitor artifacts downloaded during sync
+capacitor-android-*.tgz

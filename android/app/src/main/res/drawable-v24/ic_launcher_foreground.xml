@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportHeight="108"
+    android:viewportWidth="108">
+    <!-- FLUXTRAP logo: stylized F with trap border -->
+    <!-- F letter -->
+    <path
+        android:fillColor="#00ffcc"
+        android:pathData="M24,18 L24,90 L38,90 L38,60 L56,60 L56,48 L38,48 L38,30 L62,30 L62,18 Z" />
+    <!-- Trap border (dim) -->
+    <path
+        android:fillColor="#00ffcc"
+        android:fillAlpha="0.15"
+        android:pathData="M14,14 L94,14 L94,94 L14,94 Z M18,18 L18,90 L90,90 L90,18 Z" />
+</vector>

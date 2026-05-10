@@ -1,0 +1,61 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Build APK / AAB
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync Capacitor (copy assets + gradle config)
+        run: npx cap sync android
+
+      - name: Build Debug APK
+        run: cd android && ./gradlew assembleDebug
+        env:
+          CI: true
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fluxtrap-debug-apk
+          path: android/app/build/outputs/apk/debug/*.apk
+          retention-days: 30
+
+      - name: Build Release AAB (on releases only)
+        if: github.event_name == 'release'
+        run: cd android && ./gradlew bundleRelease
+        env:
+          CI: true
+
+      - name: Upload AAB artifact
+        if: github.event_name == 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fluxtrap-release-aab
+          path: android/app/build/outputs/bundle/release/*.aab
+          retention-days: 90
