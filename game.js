@@ -402,7 +402,7 @@ function renderAchievements(){
 class Game{
   constructor(){
     this.canvas=document.getElementById('c');
-    this.ctx=this.canvas.getContext('2d');
+    this.ctx=this.canvas ? this.canvas.getContext('2d') : null;
     this.levels=[];
     this.levelsLoaded=false;
     this._loadingLevels=false;
@@ -419,7 +419,65 @@ class Game{
     };
     this.keys={left:false,right:false,jump:false};
     this._lastTS=0;this._msgTimer=null;
+  }
+
+  init(){
+    if(!this.ctx){
+      this.canvas = document.getElementById('c');
+      this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
+    }
+    if(!this.ctx){console.error('Canvas not found!');return;}
+    const dot=document.getElementById('js-dot');
+    if(dot)dot.style.background='#0f0';
     this._bindAll();
+    this._loadLevels();
+    this.resizeCanvas();
+    requestAnimationFrame(ts=>this._loop(ts));
+  }
+
+  _bindAll(){
+    document.addEventListener('keydown',e=>{
+      if(e.key==='p'||e.key==='P'||e.key==='Escape'){this._togglePause();return;}
+      if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')this.keys.left=true;
+      if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')this.keys.right=true;
+      if(e.key===' '||e.key==='ArrowUp'||e.key==='w'||e.key==='W')this.keys.jump=true;
+      e.preventDefault();
+    },{passive:false});
+    document.addEventListener('keyup',e=>{
+      if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')this.keys.left=false;
+      if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')this.keys.right=false;
+      if(e.key===' '||e.key==='ArrowUp'||e.key==='w'||e.key==='W')this.keys.jump=false;
+    });
+    for(const[id,k]of[['btn-l','left'],['btn-r','right'],['btn-jump','jump']])this._btn(id,k);
+    document.getElementById('btn-pause')?.addEventListener('click',()=>this._togglePause());
+    const so=()=>{initAudio();this.start();};
+    document.getElementById('ov-start')?.addEventListener('click',so,{once:true});
+    window.addEventListener('resize',()=>{if(this.state.running)this.resizeCanvas();});
+    for(const id of['profile','shop','challenges','leaderboard','stats','achievements']){
+      document.getElementById('btn-menu-'+id)?.addEventListener('click',()=>showPanel(id));
+    }
+    document.querySelectorAll('.panel-close').forEach(e=>e.addEventListener('click',hidePanel));
+    try{if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App){
+      window.Capacitor.Plugins.App.addListener('backButton',()=>{
+        if(activePanel){hidePanel();}
+        else if(this.state.running&&!this.state.paused){this._togglePause();}
+        else if(this.state.paused){this._togglePause();}
+      });
+    }}catch(e){}
+  }
+
+  _btn(id,kn){
+    const el=document.getElementById(id);if(!el)return;
+    el.oncontextmenu=e=>e.preventDefault();
+    el.ontouchcancel=e=>{this.keys[kn]=false;el.classList.remove('pressed');};
+    const dn=e=>{e.preventDefault();e.stopPropagation();this.keys[kn]=true;el.classList.add('pressed');};
+    const up=e=>{e.preventDefault();e.stopPropagation();this.keys[kn]=false;el.classList.remove('pressed');};
+    el.addEventListener('touchstart',dn,{passive:false});el.addEventListener('touchend',up,{passive:false});
+    el.addEventListener('touchcancel',up,{passive:false});
+    if(!('ontouchstart' in window)){
+      el.addEventListener('mousedown',dn);el.addEventListener('mouseup',up);
+      el.addEventListener('mouseleave',up);
+    }
   }
 
   async _loadLevels(){
@@ -835,4 +893,9 @@ class Game{
 window._save = loadSave();
 window._game = new Game();
 window.game = window._game;
-window._game.init();
+
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', () => window._game.init());
+}else{
+  window._game.init();
+}
