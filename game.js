@@ -517,14 +517,6 @@ class Game{
     }
   }
 
-  init(){
-    const dot=document.getElementById('js-dot');
-    if(dot)dot.style.background='#0f0';
-    this._loadLevels();
-    this.resizeCanvas();
-    requestAnimationFrame(ts=>this._loop(ts));
-  }
-
   start(){
     if(this.state.started)return;
     if(!this.levelsLoaded){
