@@ -1,16 +1,20 @@
 'use strict';
 
 // Debug simple - ejecutar inmediatamente
+var _dbgDiv;
 (function(){
-  var d = document.createElement('div');
-  d.id = 'debug-simple';
-  d.style.cssText = 'position:fixed;top:20px;left:4px;background:#000;color:#0f0;padding:4px 8px;font-size:10px;font-family:monospace;z-index:9999;';
-  d.textContent = 'JS: Loading...';
-  document.body.appendChild(d);
-  window._debugSimple = d;
+  _dbgDiv = document.createElement('div');
+  _dbgDiv.style.cssText = 'position:fixed;top:20px;left:4px;background:#000;color:#0f0;padding:4px 8px;font-size:10px;font-family:monospace;z-index:9999;white-space:pre-wrap;max-width:180px;';
+  _dbgDiv.textContent = 'JS: Loading...';
+  document.body.appendChild(_dbgDiv);
 })();
 
-console.log('FLUXTRAP: Script starting...');
+function dbg(msg){
+  if(_dbgDiv){ _dbgDiv.textContent = msg; }
+  console.log('DBG:', msg);
+}
+
+dbg('STEP 1: Script loaded');
 window._gameReady = false;
 
 const PLAYER_W = 16, PLAYER_H = 18, CS = 20;
