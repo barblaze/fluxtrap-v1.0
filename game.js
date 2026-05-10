@@ -405,8 +405,11 @@ function renderAchievements(){
 /* ========== GAME ========== */
 class Game{
   constructor(){
+    updateDebug('Game constructor: Getting canvas...');
     this.canvas=document.getElementById('c');
+    if(!this.canvas){ updateDebug('ERROR: canvas not found in constructor!'); }
     this.ctx=this.canvas ? this.canvas.getContext('2d') : null;
+    if(!this.ctx){ updateDebug('WARN: ctx is null in constructor'); }
     this.levels=[];
     this.levelsLoaded=false;
     this._loadingLevels=false;
@@ -426,17 +429,26 @@ class Game{
   }
 
   init(){
+    updateDebug('init(): Starting...');
     if(!this.ctx){
+      updateDebug('init(): Getting canvas...');
       this.canvas = document.getElementById('c');
       this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
     }
-    if(!this.ctx){console.error('Canvas not found!');return;}
+    if(!this.ctx){
+      updateDebug('ERROR: Canvas not found in init()!');
+      return;
+    }
+    updateDebug('init(): Canvas OK, binding events...');
     const dot=document.getElementById('js-dot');
     if(dot)dot.style.background='#0f0';
     this._bindAll();
+    updateDebug('init(): Events bound, loading levels...');
     this._loadLevels();
+    updateDebug('init(): Levels loading, resizing...');
     this.resizeCanvas();
     requestAnimationFrame(ts=>this._loop(ts));
+    updateDebug('init(): DONE');
   }
 
   _bindAll(){
@@ -906,41 +918,44 @@ class Game{
 }
 
 /* ========== INIT ========== */
+function updateDebug(msg){
+  const d = document.getElementById('debug-status');
+  if(d){ d.textContent = msg; d.style.color = msg.includes('ERROR') ? '#f00' : '#0f0'; }
+  console.log('DEBUG:', msg);
+}
+
 function initGame(){
-  console.log('FLUXTRAP: Initializing...');
+  updateDebug('INIT: Starting...');
   try{
+    updateDebug('INIT: Loading save...');
     window._save = loadSave();
+    updateDebug('INIT: Creating Game...');
     window._game = new Game();
     window.game = window._game;
+    updateDebug('INIT: Calling game.init()...');
     window._game.init();
     window._gameReady = true;
-    console.log('FLUXTRAP: Game initialized successfully!');
-    // Mostrar indicador visual de éxito
+    updateDebug('INIT: DONE! Game ready.');
     const dot = document.getElementById('js-dot');
     if(dot) dot.style.background = '#00ff00';
   }catch(e){
+    updateDebug('ERROR: ' + e.message);
     console.error('FLUXTRAP: Init error:', e);
-    // Mostrar error en pantalla
-    const errDiv = document.createElement('div');
-    errDiv.id = 'init-error';
-    errDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#c00;color:#fff;padding:20px;border-radius:8px;z-index:99999;font-family:monospace;';
-    errDiv.textContent = 'ERROR: ' + e.message;
-    document.body.appendChild(errDiv);
   }
 }
 
 function startGameClick(){
-  console.log('FLUXTRAP: Start button clicked, window._game:', !!window._game);
+  const d = document.getElementById('debug-status');
   if(!window._game){
-    alert('Game not loaded yet! Please wait or refresh.');
+    d.textContent = 'CLICK ERROR: window._game is NULL!';
+    d.style.color = '#f00';
+    alert('Game not loaded! window._game = ' + window._game);
     return;
   }
+  d.textContent = 'CLICK: Starting game...';
   window._game.start();
+  d.textContent = 'CLICK: Game started!';
 }
 
-// Ejecutar cuando el DOM esté listo
-if(document.readyState === 'loading'){
-  document.addEventListener('DOMContentLoaded', initGame);
-}else{
-  initGame();
-}
+// Ejecutar inmediatamente (sin esperar DOMContentLoaded)
+initGame();
