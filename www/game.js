@@ -782,8 +782,8 @@ class Game{
     const p=document.getElementById('ov-pre'),t=document.getElementById('ov-title'),s=document.getElementById('ov-sub'),ti=document.getElementById('ov-tip'),b=document.getElementById('ov-start'),o=document.getElementById('overlay');
     if(p)p.textContent=pre;if(t)t.textContent=title;if(s)s.textContent=sub;if(ti)ti.style.display='none';if(b){b.textContent=btnTxt;b.onclick=btnCb;}if(o)o.classList.remove('off');
   }
-  _hideOverlay(){const o=document.getElementById('overlay');if(o)o.classList.add('off');}
-  _togglePause(){if(!this.state.running||!this.state.started)return;this.state.paused=!this.state.paused;if(this.state.paused)this._showOverlay('PAUSED','','','RESUME',()=>{this.state.paused=false;this._lastTS=performance.now();this._hideOverlay();});}
+  _hideOverlay(){const o=document.getElementById('overlay');if(o)o.classList.add('off');const rb=document.getElementById('ov-restart');if(rb)rb.remove();}
+  _togglePause(){if(!this.state.running||!this.state.started)return;this.state.paused=!this.state.paused;if(this.state.paused){this._showOverlay('PAUSED','','','RESUME',()=>{this.state.paused=false;this._lastTS=performance.now();this._hideOverlay();});const ov=document.getElementById('overlay');if(ov&&!document.getElementById('ov-restart')){const rb=document.createElement('button');rb.id='ov-restart';rb.className='ov-btn alt';rb.textContent='RESTART LEVEL';rb.onclick=()=>{this.state.paused=false;this.loadLevel(this.state.lvlIdx);this._hideOverlay();};ov.appendChild(rb);}}}
 
   _bindAll(){
     document.addEventListener('keydown',e=>{
