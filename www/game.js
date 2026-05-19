@@ -654,7 +654,6 @@ class Game{
     if(s.deaths<=3&&s.lvl?.id!=='tutorial'){const dc=getDailyChallenge();if(!dc.done){sv.dailyDone=true;sv.lastDaily=`${dailySeed()}`;sv.streak++;addXP(dc.xp);sv.coins+=dc.coins;if(sv.streak>=3)checkAchievement('streak3');if(sv.streak>=7)checkAchievement('streak7');writeSave();sfx('coin');this._showMsg('DAILY COMPLETE!');}}
     if(s.lvlIdx===4&&s.deaths<=5&&s.lvl?.id!=='tutorial'){const wc=getWeeklyChallenge();if(!wc.done){sv.weeklyDone[weeklySeed()]=true;addXP(wc.xp);sv.coins+=wc.coins;sv.gems+=wc.gems;writeSave();sfx('coin');this._showMsg('WEEKLY COMPLETE!');}}
 
-    const nonTutCount=this.levels.filter(l=>l.id!=='tutorial').length;
     const isLastNormal=s.lvlIdx>=nonTutCount-1;
     if(s.lvl?.id==='tutorial'){
       // Tutorial complete - go to main game
