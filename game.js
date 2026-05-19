@@ -432,28 +432,23 @@ class Game{
     if(this._loadingLevels)return;
     this._loadingLevels=true;
     this._loadFailed=false;
-    for(const url of['./mapa.json','../www/mapa.json']){
+    const urls=['./mapa.json','./www/mapa.json','mapa.json'];
+    for(const url of urls){
       try{
         const r=await fetch(url);
-        if(r.ok){this.levels=await r.json();this.levelsLoaded=true;console.log('loaded',url);this._loadingLevels=false;this._onLevelsLoaded();return;}
-      }catch(e){}
-      try{const x=new XMLHttpRequest();
-        x.open('GET',url);x.overrideMimeType('application/json');
-        await new Promise((a,b)=>{x.onload=()=>a();x.onerror=()=>b();x.send();});
-        if(x.status===200||x.status===0){this.levels=JSON.parse(x.responseText);this.levelsLoaded=true;console.log('loaded',url);this._loadingLevels=false;this._onLevelsLoaded();return;}
+        if(r.ok){this.levels=await r.json();this.levelsLoaded=true;console.log('Loaded: '+url);this._loadingLevels=false;this._onLevelsLoaded();return;}
       }catch(e){}
     }
-    // Last resort: sync XHR with timeout
-    for(const url of['./mapa.json','../www/mapa.json']){
-      try{const x=new XMLHttpRequest();
-        x.open('GET',url,false);x.timeout=2000;x.overrideMimeType('application/json');
-        x.send();
-        if(x.status===200||x.status===0){this.levels=JSON.parse(x.responseText);this.levelsLoaded=true;console.log('loaded(sync)',url);this._loadingLevels=false;this._onLevelsLoaded();return;}
-      }catch(e){}
-    }
-    this._loadingLevels=false;
-    this._loadFailed=true;
-    console.warn('mapa.json NOT LOADED - game will not render');
+    console.warn('mapa.json not loaded - generating fallback level');
+    this._genFallback();
+    this._onLevelsLoaded();
+  }
+  _genFallback(){
+    this.levels=[{pw:20,ph:13,sx:1,sy:10,map:[],triggers:[],entities:[]}];
+    const l=this.levels[0];
+    for(let r=0;r<l.ph;r++)for(let c=0;c<l.pw;c++)l.map.push((r===0||r===l.ph-1||c===0||c===l.pw-1)?1:0);
+    l.map[l.sy*l.pw+l.sx]=0;l.map[2*l.pw+18]=8;
+    this.levelsLoaded=true;this._loadFailed=false;
   }
 
   _onLevelsLoaded(){
@@ -467,7 +462,7 @@ class Game{
     const dot=document.getElementById('js-dot');
     if(dot)dot.style.background='#0f0';
     this._loadLevels();
-    this.resizeCanvas();
+    setTimeout(()=>this.resizeCanvas(),100);
     requestAnimationFrame(ts=>this._loop(ts));
   }
 
@@ -531,13 +526,15 @@ class Game{
 
   resizeCanvas(retries){
     if(retries===undefined)retries=0;
-    const a=document.getElementById('arena'),aw=a.clientWidth,ah=a.clientHeight;
-    if((aw===0||ah===0)&&retries<10){setTimeout(()=>this.resizeCanvas(retries+1),100);return;}
-    const lvl=this.levels[this.state.lvlIdx];
-    if(!lvl){
-      this.canvas.width=aw;this.canvas.height=ah;
-      this.SCALE=1;
-      return;
+    const a=document.getElementById('arena');
+    if(!a){if(retries<5){setTimeout(()=>this.resizeCanvas(retries+1),200);}return;}
+    const aw=a.clientWidth||320;
+    const ah=a.clientHeight||400;
+    if((aw===0||ah===0)&&retries<5){setTimeout(()=>this.resizeCanvas(retries+1),200);return;}
+    const lvl=this.levels&&this.levels[this.state&&this.state.lvlIdx];
+    if(!lvl||!lvl.pw||!lvl.ph){
+      this.canvas.width=Math.max(aw,320);this.canvas.height=Math.max(ah,400);
+      this.SCALE=1;return;
     }
     const gw=lvl.pw*CS,gh=lvl.ph*CS;
     this.SCALE=Math.min(aw/gw,ah/gh,2);

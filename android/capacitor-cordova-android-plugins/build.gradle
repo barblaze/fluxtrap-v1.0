@@ -1,0 +1,28 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.1'
+    }
+}
+apply plugin: 'com.android.library'
+android {
+    namespace "capacitor.cordova.android.plugins"
+    compileSdk 34
+    defaultConfig {
+        minSdk 22
+        targetSdk 34
+    }
+}
+repositories {
+    google()
+    mavenCentral()
+    flatDir {
+        dirs 'src/main/libs', 'libs'
+    }
+}
+dependencies {
+    implementation fileTree(dir: 'src/main/libs', include: ['*.jar'])
+}

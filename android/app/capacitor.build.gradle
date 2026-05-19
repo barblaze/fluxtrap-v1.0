@@ -1,0 +1,4 @@
+// Capacitor Build - Generated
+dependencies {
+    implementation project(':capacitor-android')
+}

@@ -3,8 +3,8 @@
   "appName": "FLUXTRAP",
   "webDir": "www",
   "server": {
-    "androidScheme": "http",
-    "cleartext": true
+    "androidScheme": "https",
+    "cleartext": false
   },
   "android": {
     "buildOptions": {
@@ -27,3 +27,4 @@
     }
   }
 }
+

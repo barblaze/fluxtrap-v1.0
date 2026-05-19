@@ -130,11 +130,12 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
     <div class="hud-grp" id="h-lvl"><div class="hud-lbl">ZONE</div><div class="hud-val" id="hv-lvl">01</div></div>
     <div id="h-msg"></div>
     <div class="hud-grp" id="h-deaths"><div class="hud-lbl">DEATHS</div><div class="hud-val" id="hv-deaths">0</div></div>
-    <button class="ctrl-btn" id="btn-pause">II</button>
+    <button class="ctrl-btn" id="btn-pause" onclick="window._game && window._game._togglePause()">II</button>
   </div>
 
   <div id="arena">
     <div id="js-dot" style="position:fixed;top:4px;left:4px;width:8px;height:8px;border-radius:50%;background:red;z-index:9999;transition:background.3s"></div>
+  <div id="debug-status" style="position:fixed;top:20px;left:4px;background:#000;color:#0f0;padding:4px 8px;font-size:10px;font-family:monospace;z-index:9999;max-width:200px;word-break:break-all;">INIT...</div>
     <canvas id="c"></canvas>
 
     <div id="overlay">
@@ -146,56 +147,56 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
         Reach the <span style="color:var(--c)">EXIT</span> if it lets you.<br>
         <span style="color:var(--g);font-size:9px">PRESS ESC TO ACCESS MENU</span>
       </div>
-      <button class="ov-btn" id="ov-start" onclick="window._game&&window._game.start()">START SUFFERING</button>
+      <button class="ov-btn" id="ov-start" onclick="startGameClick()">START SUFFERING</button>
     </div>
 
     <!-- Profile Panel -->
     <div class="panel panel-hidden" id="panel-profile">
-      <div class="panel-header"><div class="panel-title">PROFILE</div><button class="panel-close">X</button></div>
+      <div class="panel-header"><div class="panel-title">PROFILE</div><button class="panel-close" onclick="hidePanel()">X</button></div>
       <div class="panel-body" id="panel-profile-content"></div>
     </div>
 
     <!-- Shop Panel -->
     <div class="panel panel-hidden" id="panel-shop">
-      <div class="panel-header"><div class="panel-title">SHOP</div><button class="panel-close">X</button></div>
+      <div class="panel-header"><div class="panel-title">SHOP</div><button class="panel-close" onclick="hidePanel()">X</button></div>
       <div class="panel-body" id="panel-shop-content"></div>
     </div>
 
     <!-- Challenges Panel -->
     <div class="panel panel-hidden" id="panel-challenges">
-      <div class="panel-header"><div class="panel-title">CHALLENGES</div><button class="panel-close">X</button></div>
+      <div class="panel-header"><div class="panel-title">CHALLENGES</div><button class="panel-close" onclick="hidePanel()">X</button></div>
       <div class="panel-body" id="panel-challenges-content"></div>
     </div>
 
     <!-- Leaderboard Panel -->
     <div class="panel panel-hidden" id="panel-leaderboard">
-      <div class="panel-header"><div class="panel-title">LEADERBOARD</div><button class="panel-close">X</button></div>
+      <div class="panel-header"><div class="panel-title">LEADERBOARD</div><button class="panel-close" onclick="hidePanel()">X</button></div>
       <div class="panel-body" id="panel-lb-content"></div>
     </div>
 
     <!-- Stats Panel -->
     <div class="panel panel-hidden" id="panel-stats">
-      <div class="panel-header"><div class="panel-title">STATS</div><button class="panel-close">X</button></div>
+      <div class="panel-header"><div class="panel-title">STATS</div><button class="panel-close" onclick="hidePanel()">X</button></div>
       <div class="panel-body" id="panel-stats-content"></div>
     </div>
 
     <!-- Achievements Panel -->
     <div class="panel panel-hidden" id="panel-achievements">
-      <div class="panel-header"><div class="panel-title">ACHIEVEMENTS</div><button class="panel-close">X</button></div>
+      <div class="panel-header"><div class="panel-title">ACHIEVEMENTS</div><button class="panel-close" onclick="hidePanel()">X</button></div>
       <div class="panel-body" id="panel-achievements-content"></div>
     </div>
   </div>
 
   <div id="ctrl-bar">
     <div class="btn-grp">
-      <button class="menu-btn" id="btn-menu-profile">PROFILE</button>
-      <button class="menu-btn" id="btn-menu-shop">SHOP</button>
-      <button class="menu-btn" id="btn-menu-challenges">DAILY</button>
+      <button class="menu-btn" id="btn-menu-profile" onclick="showPanel('profile')">PROFILE</button>
+      <button class="menu-btn" id="btn-menu-shop" onclick="showPanel('shop')">SHOP</button>
+      <button class="menu-btn" id="btn-menu-challenges" onclick="showPanel('challenges')">DAILY</button>
     </div>
     <div class="btn-grp">
-      <button class="menu-btn" id="btn-menu-leaderboard">RANK</button>
-      <button class="menu-btn" id="btn-menu-stats">STATS</button>
-      <button class="menu-btn" id="btn-menu-achievements">ACHIEVE</button>
+      <button class="menu-btn" id="btn-menu-leaderboard" onclick="showPanel('leaderboard')">RANK</button>
+      <button class="menu-btn" id="btn-menu-stats" onclick="showPanel('stats')">STATS</button>
+      <button class="menu-btn" id="btn-menu-achievements" onclick="showPanel('achievements')">ACHIEVE</button>
     </div>
   </div>
 
@@ -211,6 +212,6 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
   </div>
 </div>
 
-<script defer src="./game.js"></script>
+<script src="./game.js"></script>
 </body>
 </html>
