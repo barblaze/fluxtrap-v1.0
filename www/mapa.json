@@ -2793,7 +2793,7 @@
                              "row":  2,
                              "trigger":  {
                                              "col":  1,
-                                             "row":  1,
+                                             "row":  2,
                                              "w":  6,
                                              "h":  2
                                          },
@@ -2907,7 +2907,7 @@
                          },
                          {
                              "id":  "pu7",
-                             "powerType":  "doubleJump",
+                             "powerType":  "shield",
                              "col":  8,
                              "row":  3,
                              "type":  "powerup",
