@@ -19,7 +19,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 #arena{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;min-height:0;background:var(--bg)}
 canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
 #ctrl-bar{background:var(--hud);border-top:1px solid #0f2030;padding:8px 16px;padding-bottom:calc(8px + var(--sb));display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-@media(hover:hover)and(pointer:fine){#ctrl-bar{display:none}#hud-top{padding-bottom:8px}}
+@media(hover:hover)and(pointer:fine){#ctrl-bar{display:none}#ctrl-bar-bottom{display:none}#hud-top{padding-bottom:8px}}
 .hud-grp{display:flex;flex-direction:column;align-items:center;gap:1px}
 .hud-lbl{font-size:8px;color:#335;letter-spacing:2px;text-transform:uppercase}
 .hud-val{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--c)}
@@ -32,8 +32,8 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
 .menu-btn:active,.menu-btn:hover{background:#0a2030;border-color:var(--c);color:var(--c);box-shadow:0 0 6px var(--c)}
 .ctrl-btn{border-radius:8px;background:#080c18;border:1px solid #1a2a3a;color:#557;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .08s;flex-shrink:0}
 .ctrl-btn:active,.ctrl-btn.pressed{background:#0a2030;border-color:var(--c);color:var(--c);box-shadow:0 0 8px var(--c)}
-.dir-btn{width:52px;height:52px;font-size:18px}
-#btn-pause{font-size:14px;width:44px;height:44px}
+.dir-btn{width:68px;height:68px;font-size:24px}
+#btn-jump{width:90px;height:64px;font-size:14px}#btn-pause{font-size:14px;width:44px;height:44px}
 /* Overlay */
 #overlay{position:absolute;inset:0;z-index:20;background:rgba(4,6,15,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .3s}
 #overlay.off{opacity:0;pointer-events:none}
@@ -200,7 +200,7 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
     </div>
   </div>
 
-  <div id="ctrl-bar-bottom" style="background:var(--hud);border-top:1px solid #0f2030;padding:6px 16px;padding-bottom:calc(6px + var(--sb));display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+  <div id="ctrl-bar-bottom" style="background:var(--hud);border-top:1px solid #0f2030;padding:12px 20px;padding-bottom:calc(16px + var(--sb));display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
     <div class="btn-grp">
       <div class="ctrl-btn dir-btn" id="btn-l"><</div>
       <div id="dpad-mid"></div>
