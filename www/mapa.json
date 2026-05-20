@@ -2904,6 +2904,18 @@
                                          },
                              "resetDelay":  0.8,
                              "oneShot":  false
+                         },
+                         {
+                             "id":  "pu7",
+                             "powerType":  "speed",
+                             "col":  8,
+                             "row":  3,
+                             "type":  "powerup",
+                             "trigger":  {
+                                             "row":  3,
+                                             "radius":  1.5,
+                                             "col":  8
+                                         }
                          }
                      ]
     },
