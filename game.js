@@ -191,7 +191,7 @@ class Entity{
 class SpikeLauncher extends Entity{
   constructor(def){super(def);this.speed=def.speed??480;this.travelDist=def.travelDist??CS*2;this._off=0;this._st=0;}
   onTrigger(g){this._st=g.tileAt(this.col,this.row);g.setTile(this.col,this.row,3);this._off=0;sfx('whoosh');}
-  onUpdate(dt,g){this._off=Math.min(this._off+this.speed*dt,this.travelDist);if(_aabb(g.state.player.x,g.state.player.y,PLAYER_W,PLAYER_H,this.x,this.y-this._off,CS,CS))g.killPlayer();return this._off>=this.travelDist;}
+  onUpdate(dt,g){this._off=Math.min(this._off+this.speed*dt,this.travelDist);if(_aabb(g.state.player.x,g.state.player.y,PLAYER_W,PLAYER_H,this.x,this.y-this._off,CS,CS))g.killPlayer('spike_launcher');return this._off>=this.travelDist;}
   onReset(g){g.setTile(this.col,this.row,this._st);this._off=0;}
   onDraw(ctx){
     if(this.state!==FSM.ANIMATING&&this.state!==FSM.TRIGGERED)return;
@@ -212,19 +212,19 @@ class VanishPlatform extends Entity{
 class DropBlock extends Entity{
   constructor(def){super(def);this._fy=this.row*CS;this._spd=120;this._acc=1440;this._max=840;}
   onTrigger(g){this._fy=this.row*CS;this._spd=120;sfx('whoosh');}
-  onUpdate(dt,g){this._spd=Math.min(this._spd+this._acc*dt,this._max);this._fy+=this._spd*dt;const p=g.state.player,pc=Math.floor((p.x+PLAYER_W/2)/CS);if(pc===this.col&&Math.abs(p.y+PLAYER_H/2-this._fy)<CS*1.5)g.killPlayer();const row=Math.floor(this._fy/CS);if(row>=g.state.lvl.ph-1||g.isSolid(g.tileAt(this.col,row+1))){g.setTile(this.col,row,1);return true;}return false;}
+  onUpdate(dt,g){this._spd=Math.min(this._spd+this._acc*dt,this._max);this._fy+=this._spd*dt;const p=g.state.player,pc=Math.floor((p.x+PLAYER_W/2)/CS);if(pc===this.col&&Math.abs(p.y+PLAYER_H/2-this._fy)<CS*1.5)g.killPlayer('drop_block');const row=Math.floor(this._fy/CS);if(row>=g.state.lvl.ph-1||g.isSolid(g.tileAt(this.col,row+1))){g.setTile(this.col,row,1);return true;}return false;}
   onDraw(ctx){if(this.state!==FSM.ANIMATING&&this.state!==FSM.TRIGGERED)return;const x=this.col*CS,y=this._fy,s=CS;const g=ctx.createLinearGradient(x,y,x,y+s);g.addColorStop(0,'#e04020');g.addColorStop(1,'#802010');ctx.fillStyle=g;ctx.fillRect(x+1,y+1,s-2,s-2);ctx.strokeStyle='#ff8060';ctx.lineWidth=1;ctx.strokeRect(x+1,y+1,s-2,s-2);}
 }
 class CrushCeiling extends Entity{
   constructor(def){super(def);this.targetRow=def.targetRow??this.row+4;this.speed=def.speed??600;this._fy=this.row*CS;this._or=this.row;this._dir=1;}
   onTrigger(g){this._fy=this._or*CS;this._dir=1;sfx('whoosh');}
-  onUpdate(dt,g){this._fy+=this.speed*this._dir*dt;if(this._dir===1){if(_aabb(g.state.player.x,g.state.player.y,PLAYER_W,PLAYER_H,this.x,this._fy,CS,(this.targetRow-this._or+1)*CS))g.killPlayer();if(this._fy>=this.targetRow*CS){this._fy=this.targetRow*CS;this._dir=-1;return true;}}return false;}
+  onUpdate(dt,g){this._fy+=this.speed*this._dir*dt;if(this._dir===1){if(_aabb(g.state.player.x,g.state.player.y,PLAYER_W,PLAYER_H,this.x,this._fy,CS,(this.targetRow-this._or+1)*CS))g.killPlayer('crush');if(this._fy>=this.targetRow*CS){this._fy=this.targetRow*CS;this._dir=-1;return true;}}return false;}
   onReset(g){this._fy=this._or*CS;this._dir=1;}
   onDraw(ctx){if(this.state!==FSM.ANIMATING&&this.state!==FSM.TRIGGERED)return;const x=this.x,y=this._fy,s=CS;const g=ctx.createLinearGradient(x,y,x,y+s);g.addColorStop(0,'#223348');g.addColorStop(1,'#0e1e2e');ctx.fillStyle=g;ctx.fillRect(x+1,y+1,s-2,s-2);ctx.strokeStyle='#4488aa';ctx.lineWidth=1.5;ctx.strokeRect(x+1,y+1,s-2,s-2);}
 }
 class PatrolSpike extends Entity{
   constructor(def){super(def);this.colEnd=def.colEnd??this.col+3;this.speed=def.speed??120;this._px=this.x;this._dir=1;this.state=FSM.ANIMATING;}
-  update(dt,g){this._px+=this.speed*this._dir*dt;const r=this.colEnd*CS,l=this.col*CS;if(this._px>=r){this._px=r;this._dir=-1;}if(this._px<=l){this._px=l;this._dir=1;}if(_aabb(g.state.player.x,g.state.player.y,PLAYER_W,PLAYER_H,this._px,this.y,CS,CS))g.killPlayer();}
+  update(dt,g){this._px+=this.speed*this._dir*dt;const r=this.colEnd*CS,l=this.col*CS;if(this._px>=r){this._px=r;this._dir=-1;}if(this._px<=l){this._px=l;this._dir=1;}if(_aabb(g.state.player.x,g.state.player.y,PLAYER_W,PLAYER_H,this._px,this.y,CS,CS))g.killPlayer('spike');}
   onDraw(ctx){const x=this._px,y=this.y,s=CS;ctx.fillStyle=PAL.spike;ctx.beginPath();ctx.moveTo(this._dir>0?x+s-2:x+2,y+s/2);ctx.lineTo(x+s*0.5,y+4);ctx.lineTo(this._dir>0?x+2:x+s-2,y+s/2);ctx.lineTo(x+s*0.5,y+s-4);ctx.closePath();ctx.fill();ctx.strokeStyle=PAL.spikeG;ctx.lineWidth=1.2;ctx.stroke();}
 }
 class GravityZone extends Entity{
@@ -235,21 +235,21 @@ class GravityZone extends Entity{
 }
 class FakeExit extends Entity{
   constructor(def){super(def);this.triggerDelay=0;this.resetDelay=def.resetDelay??1.5;this.oneShot=def.oneShot??false;}
-  onTrigger(g){g.setTile(this.col,this.row,3);g._showMsg('NICE TRY - NOT THE EXIT');sfx('troll');}
+  onTrigger(g){g.killPlayer('fake_exit');g.setTile(this.col,this.row,3);g._showMsg('NICE TRY - NOT THE EXIT');sfx('troll');}
   onUpdate(dt,g){return true;}
   onReset(g){g.setTile(this.col,this.row,8);}
 }
 class TimedSpikes extends Entity{
   constructor(def){super(def);this.upTime=def.upTime??1;this.downTime=def.downTime??1;this._cycle=this.upTime+this.downTime;this._el=0;this._act=false;this._ot=def.origTile??0;}
   onTrigger(g){this._el=0;this._act=true;this._ot=g.tileAt(this.col,this.row);g.setTile(this.col,this.row,3);}
-  onUpdate(dt,g){this._el+=dt;const cp=this._el%this._cycle,sa=cp<this.upTime;if(sa!==this._act){this._act=sa;g.setTile(this.col,this.row,this._act?3:this._ot);}if(this._act&&_aabb(g.state.player.x,g.state.player.y,PLAYER_W,PLAYER_H,this.x,this.y,CS,CS))g.killPlayer();return false;}
+  onUpdate(dt,g){this._el+=dt;const cp=this._el%this._cycle,sa=cp<this.upTime;if(sa!==this._act){this._act=sa;g.setTile(this.col,this.row,this._act?3:this._ot);}if(this._act&&_aabb(g.state.player.x,g.state.player.y,PLAYER_W,PLAYER_H,this.x,this.y,CS,CS))g.killPlayer('spike');return false;}
   onReset(g){this._act=false;this._el=0;g.setTile(this.col,this.row,this._ot);}
   onDraw(ctx){if(!this._act)return;const x=this.x,y=this.y,s=CS;ctx.fillStyle=PAL.spike;ctx.beginPath();ctx.moveTo(x+s/2,y+2);ctx.lineTo(x+s-2,y+s/2);ctx.lineTo(x+s/2,y+s-2);ctx.lineTo(x+2,y+s/2);ctx.closePath();ctx.fill();ctx.strokeStyle=PAL.spikeG;ctx.lineWidth=1.5;ctx.stroke();}
 }
 class MovingPlatform extends Entity{
   constructor(def){super(def);this.colEnd=def.colEnd??this.col+4;this.rowEnd=def.rowEnd??this.row;this.speed=def.speed??80;this._px=this.x;this._py=this.y;this._dx=def.dirX??1;this._dy=def.dirY??0;this._oc=this.col;this._or=this.row;}
   onTrigger(g){this._px=this._oc*CS;this._py=this._or*CS;this._dx=this._dx||1;this._dy=this._dy||0;}
-  onUpdate(dt,g){const ex=this.colEnd*CS,ey=this.rowEnd*CS;if(this._dx!==0){this._px+=this.speed*this._dx*dt;if(this._dx>0&&this._px>=ex){this._px=ex;this._dx=-1;}else if(this._dx<0&&this._px<=this._oc*CS){this._px=this._oc*CS;this._dx=1;}}if(this._dy!==0){this._py+=this.speed*this._dy*dt;if(this._dy>0&&this._py>=ey){this._py=ey;this._dy=-1;}else if(this._dy<0&&this._py<=this._or*CS){this._py=this._or*CS;this._dy=1;}}const p=g.state.player;if(_aabb(p.x,p.y+PLAYER_H-4,PLAYER_W,4,this._px+2,this._py,CS-4,CS)){p.x+=this.speed*this._dx*dt;p.y+=this.speed*this._dy*dt;}if(_aabb(p.x,p.y,PLAYER_W,PLAYER_H,this._px,this._py,CS,CS))g.killPlayer();return false;}
+  onUpdate(dt,g){const ex=this.colEnd*CS,ey=this.rowEnd*CS;if(this._dx!==0){this._px+=this.speed*this._dx*dt;if(this._dx>0&&this._px>=ex){this._px=ex;this._dx=-1;}else if(this._dx<0&&this._px<=this._oc*CS){this._px=this._oc*CS;this._dx=1;}}if(this._dy!==0){this._py+=this.speed*this._dy*dt;if(this._dy>0&&this._py>=ey){this._py=ey;this._dy=-1;}else if(this._dy<0&&this._py<=this._or*CS){this._py=this._or*CS;this._dy=1;}}const p=g.state.player;if(_aabb(p.x,p.y+PLAYER_H-4,PLAYER_W,4,this._px+2,this._py,CS-4,CS)){p.x+=this.speed*this._dx*dt;p.y+=this.speed*this._dy*dt;}if(_aabb(p.x,p.y,PLAYER_W,PLAYER_H,this._px,this._py,CS,CS))g.killPlayer('platform');return false;}
   onReset(g){this._px=this._oc*CS;this._py=this._or*CS;this._dx=1;this._dy=0;}
   onDraw(ctx){const x=this._px,y=this._py,s=CS;const g=ctx.createLinearGradient(x,y,x,y+s);g.addColorStop(0,'#3a5a7a');g.addColorStop(1,'#1a3a5a');ctx.fillStyle=g;ctx.fillRect(x+1,y+1,s-2,s-2);ctx.strokeStyle='#6a9aba';ctx.lineWidth=1.5;ctx.strokeRect(x+1,y+1,s-2,s-2);ctx.fillStyle='#8abade';ctx.fillRect(x+3,y+3,s-6,2);ctx.fillRect(x+3,y+s-5,s-6,2);}
 }
@@ -273,7 +273,7 @@ class PowerUp extends Entity{
 }
 class Enemy extends Entity{
   constructor(def){super(def);this.colEnd=def.colEnd??this.col+3;this.speed=def.speed??80;this._px=this.x;this._dir=1;this.state=FSM.ANIMATING;}
-  update(dt,g){this._px+=this.speed*this._dir*dt;const r=this.colEnd*CS,l=this.col*CS;if(this._px>=r){this._px=r;this._dir=-1;}if(this._px<=l){this._px=l;this._dir=1;}if(_aabb(g.state.player.x,g.state.player.y,PLAYER_W,PLAYER_H,this._px,this.y,CS,CS))g.killPlayer();}
+  update(dt,g){this._px+=this.speed*this._dir*dt;const r=this.colEnd*CS,l=this.col*CS;if(this._px>=r){this._px=r;this._dir=-1;}if(this._px<=l){this._px=l;this._dir=1;}if(_aabb(g.state.player.x,g.state.player.y,PLAYER_W,PLAYER_H,this._px,this.y,CS,CS))g.killPlayer('enemy');}
   onDraw(ctx){const x=this._px,y=this.y,s=CS;const grad=ctx.createRadialGradient(x+s/2,y+s/2,0,x+s/2,y+s/2,s);grad.addColorStop(0,'#ff8844');grad.addColorStop(1,'#cc3300');ctx.fillStyle=grad;ctx.beginPath();ctx.arc(x+s/2,y+s/2,s/2-2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x+s/2-3,y+s/2-4,3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#220000';ctx.beginPath();ctx.arc(x+s/2-2,y+s/2-3,1.5,0,Math.PI*2);ctx.fill();if(this._dir>0){ctx.fillStyle='#ff8844';ctx.beginPath();ctx.arc(x+s/2+3,y+s/2-4,3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#220000';ctx.beginPath();ctx.arc(x+s/2+4,y+s/2-3,1.5,0,Math.PI*2);ctx.fill();}}
 }
 class SwitchBlock extends Entity{
@@ -422,7 +422,7 @@ class Game{
       ghostTiles:new Map(),spikeReveal:new Set(),fallingBlocks:[],
       gravFlip:false,gravTimer:0,running:false,paused:false,dying:false,
       deathTimer:0,flashTimer:0,invinTimer:0,entities:[],checkX:-1,checkY:-1,
-      started:false,
+      deathStreak:0,lastDeathCause:'generic',started:false,
     };
     this.keys={left:false,right:false,jump:false};
     this._lastTS=0;this._msgTimer=null;
@@ -513,7 +513,7 @@ class Game{
     s.triggers=lvl.triggers?lvl.triggers.map(t=>({...t})):[];
     s.firedTriggers=new Set();s.ghostTiles=new Map();s.spikeReveal=new Set();
     s.fallingBlocks=[];s.gravFlip=false;s.gravTimer=0;s.dying=false;s.deathTimer=0;
-    s.invinTimer=0;s.checkX=-1;s.checkY=-1;
+    s.invinTimer=0;s.checkX=-1;s.checkY=-1;s.deathStreak=0;s.lastDeathCause='generic';
     s.entities=[];
     if(lvl.entities){for(const d of lvl.entities){const e=createEntity(d);if(e)s.entities.push(e);}}
     for(const e of s.entities){if(!e.random)continue;const tr=e.trigger;if(!tr)continue;let nc,nr;if(tr.radius!==undefined){const a=Math.random()*Math.PI*2,d=Math.random()*tr.radius;nc=tr.col+Math.cos(a)*d;nr=tr.row+Math.sin(a)*d;}else{const w=tr.w??1,h=tr.h??1;nc=tr.col+Math.random()*w;nr=tr.row+Math.random()*h;}e.col=Math.round(nc*2)/2;e.row=Math.round(nr*2)/2;e.x=Math.round(e.col)*CS;e.y=Math.round(e.row)*CS;tr.col=e.col;tr.row=e.row;}
@@ -605,11 +605,11 @@ class Game{
       const fb=this.state.fallingBlocks[i];if(fb.landed)continue;
       fb.speed=Math.min(fb.speed+ACC*dt,MAX);fb.fy+=fb.speed*dt;
       const row=Math.floor(fb.fy/CS);
-      if(row>=this.state.lvl.ph-1||this.isSolid(this.tileAt(fb.c,row+1))){this.setTile(fb.c,row,1);this.state.fallingBlocks.splice(i,1);const p=this.state.player;if(Math.floor((p.x+PLAYER_W/2)/CS)===fb.c&&Math.abs(p.y+PLAYER_H/2-fb.fy)<CS*1.5)this.killPlayer();}
+      if(row>=this.state.lvl.ph-1||this.isSolid(this.tileAt(fb.c,row+1))){this.setTile(fb.c,row,1);this.state.fallingBlocks.splice(i,1);const p=this.state.player;if(Math.floor((p.x+PLAYER_W/2)/CS)===fb.c&&Math.abs(p.y+PLAYER_H/2-fb.fy)<CS*1.5)this.killPlayer('falling_block');}
     }
   }
 
-  killPlayer(){
+  killPlayer(cause){
     const s=this.state;
     if(s.dying||s.invinTimer>0){if(s.invinTimer>0&&s.player&&s.player.hasShield){s.player.hasShield=false;s.invinTimer=0;sfx('trap');s.flashTimer=FLASH_DUR;this._showMsg('SHIELD BROKEN!');return;}return;}
     s.dying=true;s.deathTimer=DEATH_DUR;s.deaths++;s.flashTimer=FLASH_DUR;
@@ -617,9 +617,22 @@ class Game{
     if(sv.totalDeaths===1)checkAchievement('firstBlood');
     if(sv.totalDeaths>=100)checkAchievement('century');
     if(sv.totalDeaths>=1000)checkAchievement('masochist');
-    sfx('die');this._showMsg(_rnd(TAUNTS));
+    s.deathStreak++;s.lastDeathCause=cause||'generic';
+    sfx('die');
+    this._speechText=this._getPhrase(cause);
+    this._speechTimer=s.deathTimer;
     const h=document.getElementById('hv-deaths');if(h)h.textContent=s.deaths;
     const a=document.getElementById('arena');a.style.animation='shake .25s';setTimeout(()=>a.style.animation='',280);
+  }
+
+  _getPhrase(cause){
+    const s=this.state;
+    if(Math.random()<0.01)return _rnd(FRASES.secret);
+    if(s.deathStreak>=5)return _rnd(FRASES.streak);
+    if(s.deathStreak>=3&&Math.random()<0.5)return _rnd(FRASES.streak);
+    const cat=FRASES[cause||'generic'];
+    if(cat&&cat.length>0)return _rnd(cat);
+    return _rnd(FRASES.generic);
   }
 
   respawn(){
@@ -632,13 +645,13 @@ class Game{
     }
     p.vx=0;p.vy=0;p.onGround=false;p.eyeAng=0;p.stretch=1;p.lean=0;
     p.trailPts=[];p.hasDoubleJump=true;p.jumpsLeft=2;p.hasShield=false;p.speedBoost=0;p.hasSlowFall=false;
-    this.state.dying=false;this.state.invinTimer=INVIN_DUR;this.state.gravFlip=false;this.state.gravTimer=0;
+    this.state.dying=false;this.state.invinTimer=INVIN_DUR;this.state.gravFlip=false;this.state.gravTimer=0;this._speechText=null;
   }
 
   handleExit(ec,er){
-    if(Math.random()<0.5){this.setTile(ec,er,4);sfx('troll');this._showMsg('NICE TRY - NOT THE EXIT');setTimeout(()=>this.setTile(ec,er,8),1500);return;}
+    if(Math.random()<0.5){this.killPlayer('fake_exit');this.setTile(ec,er,4);sfx('troll');this._showMsg('NICE TRY - NOT THE EXIT');setTimeout(()=>this.setTile(ec,er,8),1500);return;}
     sfx('win');
-    const s=this.state,sv=window._save;sv.totalWins++;
+    const s=this.state,sv=window._save;s.deathStreak=0;sv.totalWins++;
     const stars=calcStars(s.deaths);
     if(!sv.stars[s.lvlIdx]||sv.stars[s.lvlIdx]<stars)sv.stars[s.lvlIdx]=stars;
     if(!sv.bestDeaths[s.lvlIdx]||s.deaths<sv.bestDeaths[s.lvlIdx])sv.bestDeaths[s.lvlIdx]=s.deaths;
@@ -707,8 +720,8 @@ class Game{
     this._csf(p.x,p.y,p.vy);
     if(!p.onGround)p.stretch=1+(p.vy<0?0.2:-0.1);else p.stretch=1;
     p.lean=0;p.eyeAng=0;p.blinking=0;
-    if(this._ts(p.x,p.y))this.killPlayer();
-    if(p.y>this.canvas.height+CS||p.y<-CS*2)this.killPlayer();
+    if(this._ts(p.x,p.y))this.killPlayer('spike');
+    if(p.y>this.canvas.height+CS||p.y<-CS*2)this.killPlayer('fall');
     this._ct();this._ufb(dt);
     const c0=Math.floor(p.x/CS),c1=Math.floor((p.x+PLAYER_W-1)/CS),r0=Math.floor(p.y/CS),r1=Math.floor((p.y+PLAYER_H-1)/CS);
     outer:for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++){if(this.tileAt(c,r)===8){this.handleExit(c,r);break outer;}}
@@ -727,7 +740,7 @@ class Game{
     for(let r=0;r<lvl.ph;r++)for(let c=0;c<lvl.pw;c++){const t=this.tileAt(c,r);if(t!==0)this._drawT(c,r,t);}
     this._drawFB();
     for(const e of this.state.entities)e.draw(this.ctx,this);
-    this._drawP();this._drawDA();this._drawF();
+    this._drawP();this._drawDA();this._drawSpeechBubble();this._drawF();
   }
   _drawBG(){
     const ctx=this.ctx;ctx.fillStyle=PAL.bg;ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
@@ -778,6 +791,34 @@ class Game{
     const ctx=this.ctx,p=this.state.player,t=1-(this.state.deathTimer/DEATH_DUR);
     for(let i=0;i<8;i++){const ang=(i/8)*Math.PI*2+t*4,dist=t*CS*1.8,cx=p.x+PLAYER_W/2+Math.cos(ang)*dist,cy=p.y+PLAYER_H/2+Math.sin(ang)*dist,sz=(1-t)*8;ctx.fillStyle=`rgba(255,50,64,${1-t})`;ctx.fillRect(cx-sz/2,cy-sz/2,sz,sz);}
     ctx.save();ctx.globalAlpha=1-t;ctx.fillStyle=PAL.eye;ctx.beginPath();ctx.arc(p.x+PLAYER_W/2,p.y+PLAYER_H/2-t*30,6*(1-t*0.8),0,Math.PI*2);ctx.fill();ctx.restore();
+  }
+  _drawSpeechBubble(){
+    if(!this.state.dying||!this._speechText)return;
+    const ctx=this.ctx,p=this.state.player,t=1-(this.state.deathTimer/DEATH_DUR);
+    const txt=this._speechText;
+    ctx.font='bold 11px "Share Tech Mono",monospace';
+    const tw=ctx.measureText(txt).width,pad=16,minW=60;
+    const bw=Math.max(minW,tw+pad),bh=28;
+    let bx=p.x+PLAYER_W/2-bw/2,by=p.y-50-bh;
+    bx=Math.max(6,Math.min(bx,this.canvas.width-bw-6));
+    by=Math.max(6,Math.min(by,this.canvas.height-bh-6));
+    const alpha=t<0.15?t/0.15:Math.max(0,1-(t-0.6)/0.4);
+    if(alpha<=0)return;
+    ctx.save();ctx.globalAlpha=alpha;
+    const r=6;
+    ctx.fillStyle='rgba(10,15,25,0.92)';ctx.strokeStyle='rgba(0,255,200,0.6)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(bx+r,by);ctx.lineTo(bx+bw-r,by);
+    ctx.quadraticCurveTo(bx+bw,by,bx+bw,by+r);ctx.lineTo(bx+bw,by+bh-r);
+    ctx.quadraticCurveTo(bx+bw,by+bh,bx+bw-r,by+bh);ctx.lineTo(bx+r,by+bh);
+    ctx.quadraticCurveTo(bx,by+bh,bx,by+bh-r);ctx.lineTo(bx,by+r);
+    ctx.quadraticCurveTo(bx,by,bx+r,by);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.fillStyle='rgba(10,15,25,0.92)';
+    ctx.beginPath();ctx.moveTo(p.x+PLAYER_W/2-5,by+bh);ctx.lineTo(p.x+PLAYER_W/2,by+bh+7);
+    ctx.lineTo(p.x+PLAYER_W/2+5,by+bh);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#00ffcc';ctx.font='bold 11px "Share Tech Mono",monospace';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(txt,p.x+PLAYER_W/2,by+bh/2);
+    ctx.restore();
   }
   _showMsg(txt){const el=document.getElementById('h-msg');if(!el)return;el.textContent=txt;el.classList.add('show');clearTimeout(this._msgTimer);this._msgTimer=setTimeout(()=>el.classList.remove('show'),MSG_DUR*1000);}
   _showOverlay(pre,title,sub,btnTxt,btnCb){
