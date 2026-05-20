@@ -2907,7 +2907,7 @@
                          },
                          {
                              "id":  "pu7",
-                             "powerType":  "shield",
+                             "random":true,"powerType":  "shield",
                              "col":  8,
                              "row":  3,
                              "type":  "powerup",
