@@ -144,6 +144,7 @@ class Entity{
     this.triggerDelay=def.triggerDelay??0.05;
     this.resetDelay=def.resetDelay??-1;
     this.oneShot=def.oneShot??true;
+    this.random=def.random??false;
     this.x=this.col*CS;this.y=this.row*CS;
     this.state=FSM.IDLE;this.timer=0;this._dead=false;
   }
@@ -515,10 +516,11 @@ class Game{
     s.invinTimer=0;s.checkX=-1;s.checkY=-1;
     s.entities=[];
     if(lvl.entities){for(const d of lvl.entities){const e=createEntity(d);if(e)s.entities.push(e);}}
+    for(const e of s.entities){if(!e.random)continue;const tr=e.trigger;if(!tr)continue;let nc,nr;if(tr.radius!==undefined){const a=Math.random()*Math.PI*2,d=Math.random()*tr.radius;nc=tr.col+Math.cos(a)*d;nr=tr.row+Math.sin(a)*d;}else{const w=tr.w??1,h=tr.h??1;nc=tr.col+Math.random()*w;nr=tr.row+Math.random()*h;}e.col=Math.round(nc*2)/2;e.row=Math.round(nr*2)/2;e.x=Math.round(e.col)*CS;e.y=Math.round(e.row)*CS;tr.col=e.col;tr.row=e.row;}
     s.player={
       x:lvl.sx*CS+CS/2-PLAYER_W/2,y:lvl.sy*CS-PLAYER_H,
       vx:0,vy:0,onGround:false,eyeAng:0,stretch:1,lean:0,blinking:0,
-      trailPts:[],hasDoubleJump:false,jumpsLeft:1,hasShield:false,speedBoost:0,hasSlowFall:false,
+      trailPts:[],hasDoubleJump:true,jumpsLeft:2,hasShield:false,speedBoost:0,hasSlowFall:false,
     };
     this.resizeCanvas();
     const h=document.getElementById('hv-lvl');if(h)h.textContent=String(idx+1).padStart(2,'0');
@@ -629,7 +631,7 @@ class Game{
       p.x=lvl.sx*CS+CS/2-PLAYER_W/2;p.y=lvl.sy*CS-PLAYER_H;
     }
     p.vx=0;p.vy=0;p.onGround=false;p.eyeAng=0;p.stretch=1;p.lean=0;
-    p.trailPts=[];p.hasDoubleJump=false;p.jumpsLeft=1;p.hasShield=false;p.speedBoost=0;p.hasSlowFall=false;
+    p.trailPts=[];p.hasDoubleJump=true;p.jumpsLeft=2;p.hasShield=false;p.speedBoost=0;p.hasSlowFall=false;
     this.state.dying=false;this.state.invinTimer=INVIN_DUR;this.state.gravFlip=false;this.state.gravTimer=0;
   }
 
