@@ -13,7 +13,7 @@ const GRAVITY    = 900;
 const JUMP_VEL  = -380;
 const MOVE_SPD  = 150;
 const MAX_FALL  = 600;
-const DEATH_DUR = 1.0;
+const DEATH_DUR = 1.0, SPEECH_DUR = 2.5;
 const INVIN_DUR = 1.333;
 const GRAV_DUR  = 3.0;
 const FLASH_DUR = 0.133;
@@ -512,7 +512,7 @@ class Game{
     s.lvlIdx=idx;s.lvl=lvl;s.map=[...lvl.map];
     s.triggers=lvl.triggers?lvl.triggers.map(t=>({...t})):[];
     s.firedTriggers=new Set();s.ghostTiles=new Map();s.spikeReveal=new Set();
-    s.fallingBlocks=[];s.gravFlip=false;s.gravTimer=0;s.dying=false;s.deathTimer=0;
+    s.fallingBlocks=[];s.gravFlip=false;s.gravTimer=0;s.dying=false;s.deathTimer=0;this._speechTimer=0;this._speechText=null;
     s.invinTimer=0;s.checkX=-1;s.checkY=-1;s.deathStreak=0;s.lastDeathCause='generic';
     s.entities=[];
     if(lvl.entities){for(const d of lvl.entities){const e=createEntity(d);if(e)s.entities.push(e);}}
@@ -620,7 +620,7 @@ class Game{
     s.deathStreak++;s.lastDeathCause=cause||'generic';
     sfx('die');
     this._speechText=this._getPhrase(cause);
-    this._speechTimer=s.deathTimer;
+    this._speechTimer=SPEECH_DUR;
     const h=document.getElementById('hv-deaths');if(h)h.textContent=s.deaths;
     const a=document.getElementById('arena');a.style.animation='shake .25s';setTimeout(()=>a.style.animation='',280);
   }
@@ -698,7 +698,7 @@ class Game{
     // update entities
     const ents=s.entities;
     for(let i=ents.length-1;i>=0;i--){ents[i].update(dt,this);if(ents[i]._dead)ents.splice(i,1);}
-    if(s.dying){s.deathTimer=Math.max(0,s.deathTimer-dt);if(s.deathTimer===0)this.respawn();return;}
+    if(s.dying){s.deathTimer=Math.max(0,s.deathTimer-dt);if(this._speechTimer>0){this._speechTimer=Math.max(0,this._speechTimer-dt);if(this._speechTimer===0)this._speechText=null;}if(s.deathTimer===0)this.respawn();return;}
     const p=s.player;if(!p)return;
     const gDir=s.gravFlip?-1:1;
     p.vy+=GRAVITY*gDir*dt;
@@ -793,8 +793,8 @@ class Game{
     ctx.save();ctx.globalAlpha=1-t;ctx.fillStyle=PAL.eye;ctx.beginPath();ctx.arc(p.x+PLAYER_W/2,p.y+PLAYER_H/2-t*30,6*(1-t*0.8),0,Math.PI*2);ctx.fill();ctx.restore();
   }
   _drawSpeechBubble(){
-    if(!this.state.dying||!this._speechText)return;
-    const ctx=this.ctx,p=this.state.player,t=1-(this.state.deathTimer/DEATH_DUR);
+    if(this._speechTimer<=0||!this._speechText)return;
+    const ctx=this.ctx,p=this.state.player,t=1-(this._speechTimer/SPEECH_DUR);
     const txt=this._speechText;
     ctx.font='bold 11px "Share Tech Mono",monospace';
     const tw=ctx.measureText(txt).width,pad=16,minW=60;
