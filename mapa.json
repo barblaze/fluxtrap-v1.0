@@ -5279,7 +5279,10 @@
                              "resetDelay":  3.5,
                              "oneShot":  false
                          }
-                     ]
+                     ],
+        "sx":  1,
+        "sy":  12,
+        "triggers":  ""
     },
     {
         "id":  "torre_trampas",
@@ -5689,7 +5692,10 @@
                              "resetDelay":  1,
                              "oneShot":  false
                          }
-                     ]
+                     ],
+        "sx":  1,
+        "sy":  18,
+        "triggers":  ""
     },
     {
         "id":  "pasillo_fantasma",
@@ -6098,7 +6104,10 @@
                              "resetDelay":  3,
                              "oneShot":  false
                          }
-                     ]
+                     ],
+        "sx":  1,
+        "sy":  14,
+        "triggers":  ""
     },
     {
         "id":  "camaras_secretas",
@@ -6403,7 +6412,8 @@
                              "trigger":  ""
                          },
                          {
-                             "id":  "sw13a",  "type":  "switch_block",
+                             "id":  "sw13a",
+                             "type":  "switch_block",
                              "col":  2,
                              "row":  10,
                              "trigger":  "",
@@ -6412,7 +6422,8 @@
                              "oneShot":  false
                          },
                          {
-                             "id":  "sw13b",  "type":  "switch_block",
+                             "id":  "sw13b",
+                             "type":  "switch_block",
                              "col":  12,
                              "row":  6,
                              "trigger":  "",
@@ -6452,7 +6463,10 @@
                              "resetDelay":  3,
                              "oneShot":  false
                          }
-                     ]
+                     ],
+        "sx":  1,
+        "sy":  10,
+        "triggers":  ""
     },
     {
         "id":  "bloques_mortales",
@@ -6850,7 +6864,10 @@
                              "resetDelay":  1.8,
                              "oneShot":  false
                          }
-                     ]
+                     ],
+        "sx":  1,
+        "sy":  14,
+        "triggers":  ""
     },
     {
         "id":  "gravedad_oscilante",
@@ -7337,7 +7354,10 @@
                              "row":  1,
                              "trigger":  ""
                          }
-                     ]
+                     ],
+        "sx":  1,
+        "sy":  16,
+        "triggers":  ""
     },
     {
         "id":  "ritmo_pinchos",
@@ -7788,7 +7808,10 @@
                              "duration":  2,
                              "oneShot":  false
                          }
-                     ]
+                     ],
+        "sx":  1,
+        "sy":  18,
+        "triggers":  ""
     },
     {
         "id":  "plataformas_fugaces",
@@ -8267,7 +8290,10 @@
                              "row":  1,
                              "trigger":  ""
                          }
-                     ]
+                     ],
+        "sx":  1,
+        "sy":  12,
+        "triggers":  ""
     },
     {
         "id":  "carrera_letal",
@@ -8708,7 +8734,10 @@
                              "downTime":  1,
                              "oneShot":  false
                          }
-                     ]
+                     ],
+        "sx":  1,
+        "sy":  14,
+        "triggers":  ""
     },
     {
         "id":  "antesala_infierno",
@@ -9223,7 +9252,10 @@
                              "trigger":  "",
                              "random":  true
                          }
-                     ]
+                     ],
+        "sx":  1,
+        "sy":  14,
+        "triggers":  ""
     },
     {
         "id":  "juicio_final",
@@ -9425,6 +9457,9 @@
                              "duration":  2,
                              "oneShot":  false
                          }
-                     ]
+                     ],
+        "sx":  1,
+        "sy":  6,
+        "triggers":  ""
     }
 ]
