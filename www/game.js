@@ -13,7 +13,7 @@ const GRAVITY    = 900;
 const JUMP_VEL  = -380;
 const MOVE_SPD  = 150;
 const MAX_FALL  = 600;
-const DEATH_DUR = 1.0, SPEECH_DUR = 2.5;
+const DEATH_DUR = 1.0, SPEECH_DUR = 4.0;
 const INVIN_DUR = 1.333;
 const GRAV_DUR  = 3.0;
 const FLASH_DUR = 0.133;
@@ -645,7 +645,7 @@ class Game{
     }
     p.vx=0;p.vy=0;p.onGround=false;p.eyeAng=0;p.stretch=1;p.lean=0;
     p.trailPts=[];p.hasDoubleJump=true;p.jumpsLeft=2;p.hasShield=false;p.speedBoost=0;p.hasSlowFall=false;
-    this.state.dying=false;this.state.invinTimer=INVIN_DUR;this.state.gravFlip=false;this.state.gravTimer=0;this._speechText=null;
+    this.state.dying=false;this.state.invinTimer=INVIN_DUR;this.state.gravFlip=false;this.state.gravTimer=0;
   }
 
   handleExit(ec,er){
