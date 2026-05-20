@@ -2907,7 +2907,7 @@
                          },
                          {
                              "id":  "pu7",
-                             "powerType":  "speed",
+                             "powerType":  "doubleJump",
                              "col":  8,
                              "row":  3,
                              "type":  "powerup",
