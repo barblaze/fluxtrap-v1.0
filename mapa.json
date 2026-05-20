@@ -6403,8 +6403,7 @@
                              "trigger":  ""
                          },
                          {
-                             "id":  "sw13a",
-                             "type":  "switch",
+                             "id":  "sw13a",  "type":  "switch_block",
                              "col":  2,
                              "row":  10,
                              "trigger":  "",
@@ -6413,8 +6412,7 @@
                              "oneShot":  false
                          },
                          {
-                             "id":  "sw13b",
-                             "type":  "switch",
+                             "id":  "sw13b",  "type":  "switch_block",
                              "col":  12,
                              "row":  6,
                              "trigger":  "",
