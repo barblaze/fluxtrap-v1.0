@@ -698,7 +698,8 @@ class Game{
     // update entities
     const ents=s.entities;
     for(let i=ents.length-1;i>=0;i--){ents[i].update(dt,this);if(ents[i]._dead)ents.splice(i,1);}
-    if(s.dying){s.deathTimer=Math.max(0,s.deathTimer-dt);if(this._speechTimer>0){this._speechTimer=Math.max(0,this._speechTimer-dt);if(this._speechTimer===0)this._speechText=null;}if(s.deathTimer===0)this.respawn();return;}
+    if(this._speechTimer>0){this._speechTimer=Math.max(0,this._speechTimer-dt);if(this._speechTimer===0)this._speechText=null;}
+    if(s.dying){s.deathTimer=Math.max(0,s.deathTimer-dt);if(s.deathTimer===0)this.respawn();return;}
     const p=s.player;if(!p)return;
     const gDir=s.gravFlip?-1:1;
     p.vy+=GRAVITY*gDir*dt;
