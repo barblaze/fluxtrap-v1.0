@@ -638,6 +638,7 @@ class Game{
   respawn(){
     const lvl=this.state.lvl;const p=this.state.player;
     if(!lvl||!p)return;
+    this._speechTimer=0;this._speechText=null;
     if(this.state.checkX>=0&&this.state.checkY>=0){
       p.x=this.state.checkX;p.y=this.state.checkY;
     }else{
