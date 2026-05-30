@@ -13,7 +13,7 @@ const GRAVITY    = 900;
 const JUMP_VEL  = -380;
 const MOVE_SPD  = 150;
 const MAX_FALL  = 600;
-const DEATH_DUR = 1.0, SPEECH_DUR = 4.0;
+const DEATH_DUR = 1.0, SPEECH_DUR = 2.0;
 const INVIN_DUR = 1.333;
 const GRAV_DUR  = 3.0;
 const FLASH_DUR = 0.133;
