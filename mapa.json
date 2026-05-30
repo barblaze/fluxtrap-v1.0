@@ -1,4 +1,4 @@
-﻿[
+[
     {
         "pw":  20,
         "ph":  13,
@@ -2850,18 +2850,18 @@
                              "oneShot":  false
                          },
                          {
-                             "id":  "fe7",
-                             "type":  "fake_exit",
-                             "col":  16,
-                             "row":  20,
-                             "trigger":  {
-                                             "col":  14,
-                                             "row":  19,
-                                             "w":  3,
-                                             "h":  2
-                                         },
-                             "resetDelay":  0.8,
-                             "oneShot":  false
+                              "id":  "fe7",
+                              "type":  "fake_exit",
+                              "col":  16,
+                              "row":  20,
+                              "trigger":  {
+                                              "col":  14,
+                                              "row":  19,
+                                              "w":  3,
+                                              "h":  2
+                                          },
+                              "resetDelay":  0.8,
+                              "oneShot":  true
                          }
                      ]
     },
@@ -3708,7 +3708,7 @@
                     1,
                     1,
                     1,
-                    0,
+                     1,
                     1,
                     1,
                     1,
@@ -3974,18 +3974,18 @@
                              "oneShot":  false
                          },
                          {
-                             "id":  "fe9a",
-                             "type":  "fake_exit",
-                             "col":  24,
-                             "row":  15,
-                             "trigger":  {
-                                             "col":  22,
-                                             "row":  14,
-                                             "w":  3,
-                                             "h":  2
-                                         },
-                             "resetDelay":  0.5,
-                             "oneShot":  false
+                              "id":  "fe9a",
+                              "type":  "fake_exit",
+                              "col":  24,
+                              "row":  15,
+                              "trigger":  {
+                                              "col":  22,
+                                              "row":  14,
+                                              "w":  3,
+                                              "h":  2
+                                          },
+                              "resetDelay":  0.5,
+                              "oneShot":  true
                          },
                          {
                              "id":  "db9",
@@ -5647,18 +5647,18 @@
                              "oneShot":  false
                          },
                          {
-                             "id":  "fe12",
-                             "type":  "fake_exit",
-                             "col":  14,
-                             "row":  18,
-                             "trigger":  {
-                                             "col":  12,
-                                             "row":  17,
-                                             "w":  3,
-                                             "h":  2
-                                         },
-                             "resetDelay":  1,
-                             "oneShot":  false
+                              "id":  "fe12",
+                              "type":  "fake_exit",
+                              "col":  14,
+                              "row":  18,
+                              "trigger":  {
+                                              "col":  12,
+                                              "row":  17,
+                                              "w":  3,
+                                              "h":  2
+                                          },
+                              "resetDelay":  1,
+                              "oneShot":  true
                          }
                      ]
     },
@@ -6078,18 +6078,18 @@
                              "oneShot":  false
                          },
                          {
-                             "id":  "fe13",
-                             "type":  "fake_exit",
-                             "col":  20,
-                             "row":  13,
-                             "trigger":  {
-                                             "col":  18,
-                                             "row":  12,
-                                             "w":  3,
-                                             "h":  2
-                                         },
-                             "resetDelay":  1,
-                             "oneShot":  false
+                              "id":  "fe13",
+                              "type":  "fake_exit",
+                              "col":  20,
+                              "row":  13,
+                              "trigger":  {
+                                              "col":  18,
+                                              "row":  12,
+                                              "w":  3,
+                                              "h":  2
+                                          },
+                              "resetDelay":  1,
+                              "oneShot":  true
                          }
                      ]
     },
@@ -6498,18 +6498,18 @@
                              "oneShot":  false
                          },
                          {
-                             "id":  "fe14",
-                             "type":  "fake_exit",
-                             "col":  22,
-                             "row":  9,
-                             "trigger":  {
-                                             "col":  20,
-                                             "row":  8,
-                                             "w":  3,
-                                             "h":  2
-                                         },
-                             "resetDelay":  0.8,
-                             "oneShot":  false
+                              "id":  "fe14",
+                              "type":  "fake_exit",
+                              "col":  22,
+                              "row":  9,
+                              "trigger":  {
+                                              "col":  20,
+                                              "row":  8,
+                                              "w":  3,
+                                              "h":  2
+                                          },
+                              "resetDelay":  0.8,
+                              "oneShot":  true
                          }
                      ]
     },
@@ -7817,18 +7817,18 @@
                              "oneShot":  false
                          },
                          {
-                             "id":  "fe17",
-                             "type":  "fake_exit",
-                             "col":  14,
-                             "row":  18,
-                             "trigger":  {
-                                             "col":  12,
-                                             "row":  17,
-                                             "w":  3,
-                                             "h":  2
-                                         },
-                             "resetDelay":  0.9,
-                             "oneShot":  false
+                              "id":  "fe17",
+                              "type":  "fake_exit",
+                              "col":  14,
+                              "row":  18,
+                              "trigger":  {
+                                              "col":  12,
+                                              "row":  17,
+                                              "w":  3,
+                                              "h":  2
+                                          },
+                              "resetDelay":  0.9,
+                              "oneShot":  true
                          }
                      ]
     },
@@ -8122,7 +8122,7 @@
                     0,
                     0,
                     0,
-                    0,
+                     1,
                     1,
                     1,
                     1,
@@ -8300,18 +8300,18 @@
                              "oneShot":  false
                          },
                          {
-                             "id":  "fe18",
-                             "type":  "fake_exit",
-                             "col":  24,
-                             "row":  11,
-                             "trigger":  {
-                                             "col":  22,
-                                             "row":  10,
-                                             "w":  3,
-                                             "h":  2
-                                         },
-                             "resetDelay":  1,
-                             "oneShot":  false
+                              "id":  "fe18",
+                              "type":  "fake_exit",
+                              "col":  24,
+                              "row":  11,
+                              "trigger":  {
+                                              "col":  22,
+                                              "row":  10,
+                                              "w":  3,
+                                              "h":  2
+                                          },
+                              "resetDelay":  1,
+                              "oneShot":  true
                          },
                          {
                              "id":  "gz18",
@@ -9581,32 +9581,32 @@
                                          }
                          },
                          {
-                             "id":  "fe20a",
-                             "type":  "fake_exit",
-                             "col":  26,
-                             "row":  18,
-                             "trigger":  {
-                                             "col":  24,
-                                             "row":  17,
-                                             "w":  3,
-                                             "h":  2
-                                         },
-                             "resetDelay":  0.5,
-                             "oneShot":  false
+                              "id":  "fe20a",
+                              "type":  "fake_exit",
+                              "col":  26,
+                              "row":  18,
+                              "trigger":  {
+                                              "col":  24,
+                                              "row":  17,
+                                              "w":  3,
+                                              "h":  2
+                                          },
+                              "resetDelay":  0.5,
+                              "oneShot":  true
                          },
                          {
-                             "id":  "fe20b",
-                             "type":  "fake_exit",
-                             "col":  26,
-                             "row":  18,
-                             "trigger":  {
-                                             "col":  20,
-                                             "row":  17,
-                                             "w":  3,
-                                             "h":  2
-                                         },
-                             "resetDelay":  0.5,
-                             "oneShot":  false
+                              "id":  "fe20b",
+                              "type":  "fake_exit",
+                              "col":  26,
+                              "row":  18,
+                              "trigger":  {
+                                              "col":  20,
+                                              "row":  17,
+                                              "w":  3,
+                                              "h":  2
+                                          },
+                              "resetDelay":  0.5,
+                              "oneShot":  true
                          }
                      ]
     }
